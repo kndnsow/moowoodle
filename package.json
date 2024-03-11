@@ -1,0 +1,32 @@
+{
+    "name": "moowoodle",
+    "version": "3.2.0",
+    "description": "=== MooWoodle ===",
+    "main": "index.js",
+    "directories": {
+        "lib": "lib"
+    },
+    "scripts": {
+        "build": "wp-scripts build",
+        "start": "wp-scripts start"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/dualcube/moowoodle"
+    },
+    "author": "",
+    "license": "ISC",
+    "bugs": {
+        "url": "https://github.com/dualcube/moowoodleissues"
+    },
+    "homepage": "https://github.com/dualcube/moowoodle#readme",
+    "devDependencies": {
+        "@wordpress/scripts": "^26.17.0"
+    },
+    "dependencies": {
+        "browser-router": "^0.2.0",
+        "react-data-table-component": "^7.6.2",
+        "react-paginate": "^8.2.0",
+        "react-router-dom": "^6.22.1"
+    }
+}
