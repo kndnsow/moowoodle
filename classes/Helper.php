@@ -196,13 +196,9 @@ class Helper {
 		if (empty($category_id) || !is_numeric($category_id) || empty($taxonomy) || !taxonomy_exists($taxonomy) || empty($meta_key)) {
 			return 0;
 		}
-		$terms = get_terms(array('taxonomy' => $taxonomy, 'hide_empty' => false));
-		if ($terms) {
-			foreach ($terms as $term) {
-				if (get_term_meta($term->term_id, '_category_id', true) == $category_id) {
-					return $term->term_id;
-				}
-			}
+		$terms = get_terms(array('taxonomy' => $taxonomy, 'hide_empty' => false, 'meta_key' => $meta_key, '_category_id' => $category_id));
+		if ($terms && !is_wp_error($terms)) {
+			return (int) $terms[0]->term_id;
 		}
 		return 0;
 	}

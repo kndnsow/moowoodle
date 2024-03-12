@@ -291,66 +291,33 @@ class Course {
     public function fetch_all_courses() {
 		$courses = $this->mwd_get_courses(['numberposts' => -1, 'fields' => 'ids']);
 		$formatted_courses = [];
-		if (MOOWOODLE_PRO_ADV) {
-			$pro_popup_overlay = ' mw-pro-popup-overlay ';
-		} else {
-			$pro_popup_overlay = '';
-		}
+		$pro_popup_overlay = MOOWOODLE_PRO_ADV ? ' mw-pro-popup-overlay ' : '';
 		foreach ($courses as $course_id) {
-			$moodle_course_id = get_post_meta($course_id, 'moodle_course_id', true);
-			$course_short_name = get_post_meta($course_id, '_course_short_name', true);
-			$course_startdate = get_post_meta($course_id, '_course_startdate', true);
 			$course_enddate = get_post_meta($course_id, '_course_enddate', true);
-			$course_name = get_the_title($course_id);
-			$category_id = get_post_meta($course_id, '_category_id', true);
-			$term = get_term_by('id', Helper::moowoodle_get_term_by_moodle_id($category_id, 'course_cat', 'moowoodle_term'), 'course_cat');
+			$term = get_term_by('id', Helper::moowoodle_get_term_by_moodle_id(get_post_meta($course_id, '_category_id', true), 'course_cat', 'moowoodle_term'), 'course_cat');
 			$course_category_path = get_term_meta($term->term_id, '_category_path', true);
 			$category_ids = explode('/', $course_category_path);
 			$course_path = [];
-			foreach ($category_ids as $cat_id) {
-				if (!empty($cat_id)) {
-					$term_id = Helper::moowoodle_get_term_by_moodle_id(intval($cat_id), 'course_cat', 'moowoodle_term');
-					$course_path[] = get_term($term_id, 'course_cat')->name;
-				}
-			}
-			$course_path = !empty($course_path) ? implode(' / ', $course_path) : '';
-	
-			$catagory_name = esc_html($course_path);
+			$course_path = array_filter(array_map(function ($cat_id) {
+				return !empty($cat_id) ? get_term(Helper::moowoodle_get_term_by_moodle_id(intval($cat_id), 'course_cat', 'moowoodle_term'), 'course_cat')->name : '';
+			}, $category_ids));
+			$catagory_name = esc_html(implode(' / ', $course_path));
 			$catagory_url = esc_url(admin_url('edit.php?course_cat=' . $term->slug . '&post_type=course'));
-	
-			$moodle_url = $moodle_course_id ? esc_url(get_option('moowoodle_general_settings')["moodle_url"]) . 'course/edit.php?id=' . $moodle_course_id : '';
-	
+			$moodle_url = esc_url(get_option('moowoodle_general_settings')["moodle_url"]) . 'course/edit.php?id=' . get_post_meta($course_id, 'moodle_course_id', true);
 			$synced_products = [];
-			$products = get_posts(['post_type' => 'product', 'numberposts' => -1, 'post_status' => 'publish', 'meta_key' => 'linked_course_id', 'meta_value' => $course_id]);
-	
-			foreach ($products as $product) {
-				$synced_products[esc_html($product->post_title)] = esc_url(admin_url() . 'post.php?post=' . $product->ID . '&action=edit');
-			}
+			$product_ids = get_posts(['post_type' => 'product', 'numberposts' => -1, 'post_status' => 'publish',  'fields' => 'ids', 'meta_key' => 'linked_course_id', 'meta_value' => $course_id]);
 			$count_enrolment = 0;
-			$args = [
-				'numberposts' => -1,
-				'orderby' => 'date',
-				'order' => 'DESC',
-				'post_type' => 'shop_order',
-				'post_status' => 'wc-completed',
-			];
-			$customer_orders = wc_get_orders($args);
-			foreach ($customer_orders as $order) {
-				foreach ($order->get_items() as $enrolment) {
-					$linked_course_id = get_post_meta($enrolment->get_product_id(), 'linked_course_id', true);
-	
-					if ($linked_course_id == $course_id) {
-						$count_enrolment++;
-					}
-				}
+			foreach ($product_ids as $product_id) {
+				$synced_products[esc_html(get_the_title($product_id))] = esc_url(admin_url() . 'post.php?post=' . $product_id->ID . '&action=edit');
+				$count_enrolment = $count_enrolment + get_post_meta($product_id, 'total_sales', true);
 			}
 			$enroled_user = $count_enrolment;
-			$date = wp_date('M j, Y', $course_startdate);
+			$date = wp_date('M j, Y', get_post_meta($course_id, '_course_startdate', true));
 			if ($course_enddate) {
 				$date .= ' - ' . wp_date('M j, Y  ', $course_enddate);
 			}
 			$actions = '<div class="moowoodle-course-actions"><input type="hidden" name="course_id" value="' . $course_id . '"/><button type="button" name="sync_courses" class="sync-single-course button-primary ' . $pro_popup_overlay . '" title="' . esc_attr('Sync Couse Data', 'moowoodle') . '"><i class="dashicons dashicons-update"></i></button>';
-			if (!empty($products)) {
+			if (!empty($product_ids)) {
 				$actions .= '<button type="button" name="sync_update_product" class="update-existed-single-product button-secondary ' . $pro_popup_overlay . '" title="' . esc_attr('Sync Course Data & Update Product', 'moowoodle') . '"><i class="dashicons dashicons-admin-links"></i></button></div>';
 			} else {
 				$actions .= '<button type="button" name="sync_create_product" class="create-single-product button-secondary ' . $pro_popup_overlay . '" title="' . esc_attr('Create Product', 'moowoodle') . '"><i class="dashicons dashicons-cloud-upload"></i></button></div>';
@@ -358,8 +325,8 @@ class Course {
 			$formatted_courses[] = [
 				'id' => $course_id,
 				'moodle_url' => $moodle_url,
-				'course_name' => esc_html($course_name),
-				'course_short_name' => $course_short_name,
+				'course_name' => esc_html(get_the_title($course_id)),
+				'course_short_name' => get_post_meta($course_id, '_course_short_name', true),
 				'product' => $synced_products,
 				'catagory_name' => $catagory_name,
 				'catagory_url' => $catagory_url,

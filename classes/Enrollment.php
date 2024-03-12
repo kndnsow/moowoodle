@@ -2,12 +2,14 @@
 namespace MooWoodle;
 class Enrollment {
 	public $wc_order;
+
 	public function __construct() {
 		add_action('woocommerce_order_status_completed', array(&$this, 'process_order'), 10, 1);
-		add_action('woocommerce_subscription_status_updated', array(&$this, 'update_course_access'), 10, 3);
 		add_action('woocommerce_thankyou', array(&$this, 'enrollment_modified_details'));
 		add_action('woocommerce_after_shop_loop_item_title', array(&$this, 'add_dates_with_product'));
+		add_action('woocommerce_product_meta_start', array(&$this, 'add_dates_with_product'));
 	}
+
 	/**
 	 * Process the oreder when order status is complete.
 	 *
@@ -22,6 +24,7 @@ class Enrollment {
 			$this->process_enrollment();
 		}
 	}
+
 	/**
 	 * Perform enrollment to moodle
 	 *
@@ -29,9 +32,10 @@ class Enrollment {
 	 * @return void
 	 */
 	private function process_enrollment() {
-		$moowoodle_moodle_user_id = $this->get_moodle_user_id(true);
+		$moowoodle_moodle_user_id = $this->get_moodle_user_id();
 		$this->enrol_moodle_user(intval($moowoodle_moodle_user_id));
 	}
+
 	/**
 	 * Get moodle user id. If the user does not exist in moodle then creats an user in moodle.
 	 *
@@ -39,35 +43,42 @@ class Enrollment {
 	 * @param bool $create_moodle_user (default: bool)
 	 * @return int
 	 */
-	private function get_moodle_user_id($create_moodle_user = false) {
-		global $MooWoodle;
+	private function get_moodle_user_id() {
 		$wc_order = $this->wc_order;
-		$user = $wc_order->get_user();
-		$user_id = $user->ID;
-		$moowoodle_moodle_user_id = 0;
-		$conn_settings = get_option('moowoodle_general_settings');
-		if ($user_id) {
-			$moodle_user_id_meta = apply_filters('moowoodle_get_moodle_user_id_before_enrollment',get_user_meta($user_id, 'moowoodle_moodle_user_id', true), $user_id);
-			if (empty($moodle_user_id_meta)) {
-				//Metadata not found
-				$moowoodle_moodle_user_id = $this->search_for_moodle_user('email', $user->user_email);
-				if ($moowoodle_moodle_user_id > 0) {
-					//User exist in Moodle
-					if (isset($conn_settings['update_moodle_user']) && $conn_settings['update_moodle_user'] == "Enable") {
-						//Allow Moodle user to be updated
-						$moowoodle_moodle_user_id = $this->update_moodle_user($moowoodle_moodle_user_id);
-					}
-				} else {
-					//User does not exist in Moodle
-					$moowoodle_moodle_user_id = $this->create_moodle_user();
-				}
-				update_user_meta($user_id, 'moowoodle_moodle_user_id', $moowoodle_moodle_user_id);
-			} else {
-				//Metadata found
-				$moowoodle_moodle_user_id = $moodle_user_id_meta;
+		$user_id = $wc_order->get_user_id();
+
+		// if user is a guest user return.
+		if ( ! $user_id ) return $user_id;
+		
+		// get moodle user id
+		$moodle_user_id = get_user_meta( $user_id, 'moowoodle_moodle_user_id', true );
+		
+		// Filter before moodle user create or update.
+		$moodle_user_id = apply_filters('moowoodle_get_moodle_user_id_before_enrollment', $moodle_user_id, $user_id);
+		
+		// If moodle user id exist then return it.
+		if ( $moodle_user_id ) return $moodle_user_id;
+
+		// Get user id from moodle database.
+		$moodle_user_id = $this->search_for_moodle_user( 'email', $wc_order->get_billing_email() );
+		
+		// If user id not avialable in moodle databse then create it
+		if ( ! $moodle_user_id ) {
+			$moodle_user_id = $this->create_moodle_user();
+		} else {
+			// User id is availeble update user id.
+
+			$conn_settings = get_option('moowoodle_general_settings');
+			$should_user_update = $conn_settings['update_moodle_user'] ?? '';
+
+			if ( $should_user_update === "Enable" ) {
+				$this->update_moodle_user( $moodle_user_id );
 			}
 		}
-		return $moowoodle_moodle_user_id;
+
+		update_user_meta( $user_id, 'moowoodle_moodle_user_id', $moodle_user_id );
+
+		return $moodle_user_id;
 	}
 	/**
 	 * Searches for an user in moodle by a specific field.
@@ -223,31 +234,6 @@ class Enrollment {
 		}
 		return apply_filters('moowoodle_moodle_enrolments_data', $enrolments);
 	}
-	/**
-	 * Update user access to a course in moodle.
-	 *
-	 * @access public
-	 * @param object $subscription
-	 * @param string $new_status
-	 * @param string $old_status
-	 * @return void
-	 */
-	public function update_course_access($subscription, $new_status, $old_status) {
-		$order_id = $subscription->get_parent_id();
-		$this->wc_order = wc_get_order( $order_id );
-		$suspend_for_status = apply_filters('moowoodle_suspend_course_access_for_subscription', array('on-hold', 'cancelled', 'expired'));
-		$create_moodle_user = false;
-		$suspend = 0;
-		if ($old_status == 'active' && in_array($new_status, $suspend_for_status)) {
-			$create_moodle_user = false;
-			$suspend = 1;
-		} else if ($new_status == 'active') {
-			$create_moodle_user = true;
-			$suspend = 0;
-		}
-		$moowoodle_moodle_user_id = $this->get_moodle_user_id($create_moodle_user);
-		$this->enrol_moodle_user($moowoodle_moodle_user_id, $suspend);
-	}
 	public function enrollment_modified_details($order_id) {
 		$order = wc_get_order($order_id);
 		if ($order->get_status() == 'completed') {
@@ -257,15 +243,15 @@ class Enrollment {
 		}
 	}
 	public function add_dates_with_product() {
-		global $product, $MooWoodle;
+		global $product;
 		$startdate = get_post_meta($product->get_id(), '_course_startdate', true);
 		$enddate = get_post_meta($product->get_id(), '_course_enddate', true);
-		$display_settings = $MooWoodle->options_display_settings;
+		$display_settings = get_option('moowoodle_display_settings');
 		if (isset($display_settings['start_end_date']) && $display_settings['start_end_date'] == "Enable") {
 			if ($startdate) {
 				echo esc_html_e("Start Date : ", 'moowoodle') . esc_html_e(gmdate('Y-m-d', $startdate), 'moowoodle');
+				print_r("<br>");
 			}
-			print_r("<br>");
 			if ($enddate) {
 				echo esc_html_e("End Date : ", 'moowoodle') . esc_html_e(gmdate('Y-m-d', $enddate), 'moowoodle');
 			}
