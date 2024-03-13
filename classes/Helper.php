@@ -190,17 +190,82 @@ class Helper {
 	 * @param int $category_id
 	 * @param string $taxonomy (default: null)
 	 * @param string $meta_key (default: null)
-	 * @return int
+	 * @return object
 	 */
 	public static function moowoodle_get_term_by_moodle_id($category_id, $taxonomy = '', $meta_key = '') {
 		if (empty($category_id) || !is_numeric($category_id) || empty($taxonomy) || !taxonomy_exists($taxonomy) || empty($meta_key)) {
 			return 0;
 		}
-		$terms = get_terms(array('taxonomy' => $taxonomy, 'hide_empty' => false, 'meta_key' => $meta_key, '_category_id' => $category_id));
+		$terms = get_terms(array('taxonomy' => $taxonomy, 'hide_empty' => false, 'meta_key' => $meta_key, 'meta_value' => $category_id));
+		// echo '<pre>';print_r(var_export($terms,true));die;
 		if ($terms && !is_wp_error($terms)) {
-			return (int) $terms[0]->term_id;
+			return $terms[0];
 		}
 		return 0;
 	}
-	
+	public static function moowoodle_migration() {
+		if (get_option('dc_moowoodle_plugin_db_version')) {
+			// in update 3.1.4 migrate 'moowoodle_synchronize_settings' to moowoodle_synchronize_now.
+			if (version_compare(get_option('dc_moowoodle_plugin_db_version'), '3.1.3' ,'<=')) {
+				$old_settings = get_option('moowoodle_synchronize_settings');
+				if ($old_settings) {
+					update_option('moowoodle_synchronize_now', $old_settings);
+					delete_option('moowoodle_synchronize_settings');
+				}
+			}
+			// in update 3.1.9 product meta changed from single to array. 
+			if(version_compare(get_option('dc_moowoodle_plugin_db_version'), '3.1.9' ,'=')){
+				foreach (wc_get_products(array('return' => 'ids')) as $product_id) {
+					$moodle_course_id = get_post_meta($product_id, 'moodle_course_id', true);
+					if (is_array($moodle_course_id) && !empty($moodle_course_id)) {
+						update_post_meta($product_id, 'moodle_course_id', $moodle_course_id[0]);
+					}
+				}
+			}
+			// in update 3.1.11 change chackbox settings data from 'Enable' to true/flase. 
+			if(version_compare(get_option('dc_moowoodle_plugin_db_version'), '3.1.11' ,'<')){
+				$options =[
+					'moowoodle_general_settings' => [
+						'update_moodle_user',
+						'moowoodle_adv_log'
+					],
+					'moowoodle_display_settings' => [
+						'start_end_date'
+					],
+					'moowoodle_sso_settings' => [
+						'moowoodle_sso_eneble'
+					],
+					'moowoodle_notification_settings' => [
+						'moowoodle_create_user_custom_mail'
+					],
+					'moowoodle_synchronize_settings' => [
+						'realtime_sync_moodle_users',
+						'realtime_sync_wordpress_users',
+						'sync_user_first_name',
+						'sync_user_last_name',
+						'sync_username',
+						'sync_password',
+					],
+					'moowoodle_synchronize_now' => [
+						'sync_courses',
+						'sync_courses_category',
+						'sync_all_product',
+						'sync_new_products',
+						'sync_exist_product',
+						'sync_image',
+
+					],
+				];
+				foreach($options as $option_key => $option_value){
+					$option_value = [];
+					$settings = get_option($option_key);
+					foreach($option_value as $settings_key){
+						$settings[$settings_key] = isset($settings[$settings_key]) && $settings[$settings_key] == 'Enable' ? true : false;
+					}
+					update_option($option_key, $settings);
+				}
+			}
+		}
+        update_option('dc_moowoodle_plugin_db_version', MOOWOODLE_PLUGIN_VERSION);
+	}
 }

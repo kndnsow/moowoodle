@@ -4658,7 +4658,12 @@ const TabContent = () => {
       if (!newSetting[tabValue.setting]) {
         newSetting[tabValue.setting] = {};
       }
-      newSetting[tabValue.setting][event.target.name] = event.target.value;
+      console.log(event.target.type);
+      if (event.target.type === 'checkbox') {
+        newSetting[tabValue.setting][event.target.name] = event.target.checked;
+      } else {
+        newSetting[tabValue.setting][event.target.name] = event.target.value;
+      }
       return newSetting;
     });
   };
@@ -5058,7 +5063,6 @@ const MultipleCheckboxs = props => {
         name: checkboxOptions.name,
         defaultChecked: field.preSetting?.[checkboxOptions.name] === 'Enable',
         onChange: e => {
-          e.target.value = e.target.checked ? "Enable" : "";
           props.onChange?.(e);
         }
       }), (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("p", {
@@ -5263,9 +5267,8 @@ const ToggleCheckbox = props => {
     className: field.id,
     name: field.name,
     type: "checkbox",
-    defaultChecked: field.preSetting?.[field.name] === "Enable",
+    defaultChecked: field.preSetting?.[field.name],
     onChange: e => {
-      e.target.value = e.target.checked ? "Enable" : "";
       props.onChange?.(e);
     },
     disabled: field.is_pro === 'pro' && MooWoodleAppLocalizer.porAdv

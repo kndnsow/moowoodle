@@ -89,6 +89,7 @@ class Enrollment {
 	 * @return int
 	 */
 	private function search_for_moodle_user($field, $values) {
+		// find user on moodle with moodle externel function.
 		$users = Helper::moowoodle_moodle_core_function_callback('get_moodle_users', array('criteria' => array(array('key' => $field, 'value' => $values))));
 		if (!empty($users) && !empty($users['users'])) {
 			return $users['users'][0]['id'];
@@ -104,6 +105,7 @@ class Enrollment {
 	 */
 	private function create_moodle_user($moowoodle_moodle_user_id = 0) {
 		$user_data = $this->get_user_data();
+		// create user on moodle with moodle externel function.
 		$moodle_user = Helper::moowoodle_moodle_core_function_callback('create_users', array('users' => array($user_data)));
 		if (!empty($moodle_user) && array_key_exists(0, $moodle_user)) {
 			$moowoodle_moodle_user_id = $moodle_user[0]['id'];
@@ -172,6 +174,7 @@ class Enrollment {
 	 */
 	private function update_moodle_user($moowoodle_moodle_user_id = 0) {
 		$user_data = $this->get_user_data($moowoodle_moodle_user_id);
+		// update user data on moodle with moodle externel function.
 		Helper::moowoodle_moodle_core_function_callback('update_users', array('users' => array($user_data)));
 		return $moowoodle_moodle_user_id;
 	}
@@ -193,10 +196,12 @@ class Enrollment {
 			return;
 		}
 		$enrolment_data = $enrolments;
+		// remove course meta not need on enrol.
 		foreach ($enrolments as $key => $value) {
 			unset($enrolments[$key]['linked_course_id']);
 			unset($enrolments[$key]['course_name']);
 		}
+		// enroll user to moodle course by core external function.
 		Helper::moowoodle_moodle_core_function_callback('enrol_users', array('enrolments' => $enrolments));
 		$wc_order->update_meta_data('moodle_user_enrolled', "true");
 		$wc_order->update_meta_data('moodle_user_enrolment_date', time());
@@ -234,6 +239,13 @@ class Enrollment {
 		}
 		return apply_filters('moowoodle_moodle_enrolments_data', $enrolments);
 	}
+	/**
+	 * Display WC order thankyou page containt.
+	 *
+	 * @access public
+	 * @param void
+	 * @return void
+	 */
 	public function enrollment_modified_details($order_id) {
 		$order = wc_get_order($order_id);
 		if ($order->get_status() == 'completed') {
@@ -242,6 +254,13 @@ class Enrollment {
 			echo esc_html_e('Order status is :- ', 'moowoodle') . $order->get_status() . '<br>';
 		}
 	}
+	/**
+	 * Display course start and end date.
+	 *
+	 * @access public
+	 * @param void
+	 * @return void
+	 */
 	public function add_dates_with_product() {
 		global $product;
 		$startdate = get_post_meta($product->get_id(), '_course_startdate', true);
@@ -257,7 +276,14 @@ class Enrollment {
 			}
 		}
 	}
-	function password_generator() {
+	/**
+	 * Generate random password.
+	 *
+	 * @access private
+	 * @param void
+	 * @return void
+	 */
+	private function password_generator() {
 		$length = 8;
 		$sets = array();
 		$sets[] = 'ABCDEFGHJKLMNPQRSTUVWXYZ';

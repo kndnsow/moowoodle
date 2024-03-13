@@ -18,7 +18,6 @@ const MultipleCheckboxs = (props) => {
                                 name={checkboxOptions.name}
                                 defaultChecked={field.preSetting?.[checkboxOptions.name] === 'Enable'}
                                 onChange={(e) => {
-                                    e.target.value = e.target.checked ? "Enable" : "";
                                     props.onChange?.(e);
                                 }}
                             />

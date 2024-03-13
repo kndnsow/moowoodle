@@ -92,16 +92,7 @@ class MooWoodle {
     }
 	public function plugin_admin_init() {
 		/* Migrate MooWoodle data */
-        if (get_option('dc_moowoodle_plugin_db_version')) {
-			if (version_compare(get_option('dc_moowoodle_plugin_db_version'), '3.1.3' ,'<=')) {
-				$old_settings = get_option('moowoodle_synchronize_settings');
-				if ($old_settings) {
-					update_option('moowoodle_synchronize_now', $old_settings);
-					delete_option('moowoodle_synchronize_settings');
-				}
-			}
-		}
-        update_option('dc_moowoodle_plugin_db_version', MOOWOODLE_PLUGIN_VERSION);
+        Helper::moowoodle_migration();
 	}
 
 	public function plugin_init() {

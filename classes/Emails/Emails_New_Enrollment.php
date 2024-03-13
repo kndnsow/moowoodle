@@ -52,7 +52,7 @@ class Emails_New_Enrollment extends \WC_Email {
 	 */
 	function get_content_html() {
 		ob_start();
-		Mwd()->Template->get_template(
+		MWD()->Template->get_template(
 			$this->template_html,
 			array(
 				'enrollments' => $this->object,

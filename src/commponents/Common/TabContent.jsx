@@ -23,7 +23,12 @@ const TabContent = () => {
             if(!newSetting[tabValue.setting]){
                 newSetting[tabValue.setting] = {};
             }
-            newSetting[tabValue.setting][event.target.name] = event.target.value;
+            console.log(event.target.type);
+            if(event.target.type === 'checkbox'){
+                newSetting[tabValue.setting][event.target.name] = event.target.checked;
+            } else {
+                newSetting[tabValue.setting][event.target.name] = event.target.value;
+            }
             return newSetting;
         });
     }

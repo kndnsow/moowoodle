@@ -11,9 +11,8 @@ const ToggleCheckbox = (props) => {
                     className={field.id}
                     name={field.name}
                     type="checkbox"
-                    defaultChecked={field.preSetting?.[field.name] === "Enable"}
+                    defaultChecked={field.preSetting?.[field.name]}
                     onChange={(e) => {
-                        e.target.value = e.target.checked ? "Enable" : "";
                         props.onChange?.(e);
                     }}
                     disabled={field.is_pro === 'pro' && MooWoodleAppLocalizer.porAdv}

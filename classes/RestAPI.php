@@ -57,7 +57,9 @@ class RestAPI {
      * @return array
      */
     public function save_moowoodle_setting($request) {
+        // setting option value.
         $setting = $request->get_param('setting');
+        // setting option key.
         $settingid = $request->get_param('settingid');
         update_option($settingid,$setting);
         return 'success';
