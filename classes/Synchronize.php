@@ -51,7 +51,7 @@ class Synchronize {
 		$category_ids = array();
 		if (!empty($categories)) {
 			foreach ($categories as $category) {
-				$term_id = Helper::moowoodle_get_term_by_moodle_id($category['id'], $taxonomy, $meta_key)->term_id;
+				$term_id = MWD()->Course->moowoodle_get_term_by_moodle_id($category['id'], $taxonomy, $meta_key)->term_id;
 				if (!$term_id) {
 					$name = $category['name'];
 					$description = $category['description'];
@@ -81,7 +81,7 @@ class Synchronize {
 				$category_id = get_term_meta($term->term_id, '_category_id', true);
 				if (in_array($category_id, $category_ids)) {
 					$parent = get_term_meta($term->term_id, '_parent', true);
-					$parent_term_id = Helper::moowoodle_get_term_by_moodle_id($parent, $taxonomy, $meta_key)->term_id;
+					$parent_term_id = MWD()->Course->moowoodle_get_term_by_moodle_id($parent, $taxonomy, $meta_key)->term_id;
 					wp_update_term($term->term_id, $taxonomy, array('parent' => $parent_term_id));
 				} else if (!empty($category_id)) {
 					wp_delete_term($term->term_id, $taxonomy);
@@ -150,7 +150,7 @@ class Synchronize {
 			foreach ($posts as $post) {
 				$course_id = get_post_meta($post->ID, 'moodle_course_id', true);
 				if (array_key_exists($course_id, $course_ids)) {
-					$term_id = Helper::moowoodle_get_term_by_moodle_id($course_ids[$course_id], $taxonomy, $meta_key)->term_id;
+					$term_id = MWD()->Course->moowoodle_get_term_by_moodle_id($course_ids[$course_id], $taxonomy, $meta_key)->term_id;
 					wp_set_post_terms($post->ID, $term_id, $taxonomy);
 				} else if (!empty($course_id)) {
 					wp_delete_post($post->ID, false);

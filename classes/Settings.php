@@ -94,6 +94,7 @@ class Settings {
 					'unenrol_users' => __('User Unenrolment', 'moowoodle'),
 					'delete_users' => __('All Test', 'moowoodle'),
 				],
+				'manage_enrolment_img_url' => esc_url(plugins_url())."/moowoodle/assets/images/manage-enrolment.jpg",
 				'lang' => [
 					'warning_to_force_checked' => esc_html__('The \'Sync now\' option requires \'Moodle Courses\' to be enabled.', 'moowoodle'),
 					'warning_to_save' => esc_html__('Remember to save your recent changes to ensure they\'re preserved.', 'moowoodle'),

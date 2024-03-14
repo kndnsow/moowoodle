@@ -84,6 +84,7 @@ class MooWoodle {
 		$this->container['Enrollment'] = new Enrollment();
 		$this->container['Emails'] = new Emails();
 		$this->container['Template'] = new Template();
+		$this->container['MyAccountEndPoint'] = new MyAccountEndPoint();
 		if(is_admin()){
 			$this->container['admin'] = new Admin();
 		}
