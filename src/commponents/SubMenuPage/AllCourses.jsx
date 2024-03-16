@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import Tabs from "./../Common/Tabs";
-import ProOverlay from "./../Common/ProOverlay";
 import logo from "../../../assets/images/logo-moowoodle-pro.png";
 import DataTable from 'react-data-table-component';
 const LoadingSpinner = () => (
@@ -21,6 +20,7 @@ const AllCourses = () => {
   const [courses, setCourses] = useState([]);
   const [selectedRows, setSelectedRows] = useState([]);
   const [loading, setLoading] = useState(true);
+
   const columns = [
     {
       name: 'Course Name',
@@ -103,14 +103,44 @@ const AllCourses = () => {
         setLoading(false);
       }
     };
-
+    
     fetchData();
   }, []);
   const handleSelectedRowsChange = ( selecteRowsData ) => {
     // You can set state or dispatch with something like Redux so we can use the retrieved data
     setSelectedRows(selecteRowsData.selectedRows);
   };
-  console.log(courses);
+  
+  const handleBulkAction = async () => {
+    // Get the selected option from the dropdown
+    const selectedAction = document.getElementById("bulk-action-selector-top").value;
+    console.log('Selected action:', selectedAction);
+
+    // Extract moodle_course_id from selectedRows
+    const moodleCourseIds = selectedRows.map(row => row.moodle_course_id);
+    console.log('Selected moodle course ids:', moodleCourseIds);
+    axios({
+      method: 'post',
+      url: `${MooWoodleAppLocalizer.rest_url}moowoodle/v1/all-course-bulk-action`,
+      headers: { 'X-WP-Nonce' : MooWoodleAppLocalizer.nonce },
+      data: {
+        selectedAction: selectedAction,
+        moodleCourseIds: moodleCourseIds,
+      },
+    }).then((response) => {
+        setSuccessMsg("Settings Saved");
+        setTimeout(() => {
+            setSuccessMsg('');
+        }, 2050);
+    }).catch((error) => {
+        console.error('Error:', error);
+    });
+
+
+
+
+}
+
 
   return (
     <>
@@ -162,6 +192,7 @@ const AllCourses = () => {
                                 className={`button-secondary bulk-action-select-apply ${MooWoodleAppLocalizer.pro_popup_overlay}`}
                                 name="bulk-action-apply"
                                 type="button"
+                                onClick={handleBulkAction}
                               >
                                 {MooWoodleAppLocalizer.apply}
                               </button>
@@ -200,7 +231,6 @@ const AllCourses = () => {
                     </div>
                   </div>
                 </div>
-                {MooWoodleAppLocalizer.porAdv && <ProOverlay />}
               </div>
             </form>
           </div>

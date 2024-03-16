@@ -89,7 +89,6 @@ class MooWoodle {
 			$this->container['admin'] = new Admin();
 		}
 
-
     }
 	public function plugin_admin_init() {
 		/* Migrate MooWoodle data */

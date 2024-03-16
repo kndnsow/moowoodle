@@ -46,7 +46,7 @@ class Helper {
 		if (!empty($url) && !empty($token) && $function_name != '') {
 			$request_query = http_build_query($request_param);
 			$response = wp_remote_post($request_url, array('body' => $request_query, 'timeout' => $conn_settings['moodle_timeout']));
-			if(isset($conn_settings['moowoodle_adv_log']) && $conn_settings['moowoodle_adv_log'] == 'Enable'){
+			if($conn_settings['moowoodle_adv_log']){
 				Helper::MW_log( "\n\n        moowoodle url:" . $request_url . '&' . $request_query . "\n        moowoodle response:" . wp_json_encode($response) . "\n\n");
 			}
 		}
@@ -73,7 +73,6 @@ class Helper {
 				$error_massage = __('Not String response', 'moowoodle');
 			}
 		} else {
-			
 			$error_codes = '';
 			if(is_object($response) && is_array($response->get_error_code())) {
 				foreach($response->get_error_code() as $error_code) {
@@ -219,7 +218,7 @@ class Helper {
 					$settings = get_option($option_key);
 					$settings = $settings ? $settings : [];
 					foreach($option_value as $index => $settings_key){
-						$settings[$settings_key] = isset($settings[$settings_key]) && $settings[$settings_key] == 'Enable' ? true : false;
+						$settings[$settings_key] = $settings[$settings_key] ? true : false;
 					}
 					update_option($option_key, $settings);
 				}

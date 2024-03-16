@@ -214,7 +214,7 @@ class TestConnection {
 		if (!empty($url) && !empty($token) && $function_name != '') {
 			$request_query = http_build_query($request_param);
 			$response = wp_remote_post($request_url, array('body' => $request_query, 'timeout' => get_option('moowoodle_general_settings')['moodle_timeout']));
-			if (isset($conn_settings['moowoodle_adv_log']) && $conn_settings['moowoodle_adv_log'] == 'Enable') {
+			if ($conn_settings['moowoodle_adv_log']) {
 				Helper::MW_log( "\n\n        moowoodle url:" . $request_url . '&' . $request_query . "\n        moowoodle response:" . wp_json_encode($response) . "\n\n");
 			}
 		}
@@ -262,14 +262,19 @@ class TestConnection {
 
 			$error_massage = $error_msg . 'error code:' . $response['response']['code'] . '  ' . $response['response']['message'];
 		} elseif ($response != null) {
-			if (is_array($response->get_error_codes())) {
-				foreach ($response->get_error_codes() as $error_code) {
+			$error_codes = '';
+			if(is_object($response) && is_array($response->get_error_code())) {
+				foreach($response->get_error_code() as $error_code) {
 					$error_codes .= $error_code;
 				}
+				$error_massage =  $error_codes. $response->get_error_message();
+			} elseif (is_array($response)) {
+				$error_codes .= $response['response']['code'];
+				$error_massage =  $error_codes. $response['response']['message'];
 			} else {
 				$error_codes .= $response->get_error_code();
+				$error_massage =  $error_codes. $response->get_error_message();
 			}
-			$error_massage = $error_codes . $response->get_error_message();
 		}
 		Helper::MW_log( "\n        moowoodle error:" . $error_massage . "\n");
 		return $error_massage;

@@ -84,7 +84,13 @@ const Button = (props) => {
       console.log(error);
     };
   }
-  const syncUser = () => {}
+  const syncUser = (route) => {
+    try {
+      handleAxios({preSetting: props.field.preSetting}, route);
+    } catch(error){
+      console.log(error);
+    };
+  }
 
   const handleAxios = async(data, route) => {
     try {

@@ -7,20 +7,23 @@ class Synchronize {
 	 * @access public
 	 * @return void
 	 */
-	public function sync($sync_now_options) {
-		// if (filter_input(INPUT_POST, 'synccoursenow', FILTER_DEFAULT) === null) {
-		// 	return;
-		// }
-		// $sync_now_options = isset( $_POST['moowoodle_synchronize_now'] ) ? array_map('sanitize_key', $_POST['moowoodle_synchronize_now']) : array();
-		if (isset($sync_now_options['sync_courses_category']) && $sync_now_options['sync_courses_category'] == "Enable") {
+	public function sync_course($request) {
+		// get the current setting setting
+        $sync_now_options = $request->get_param('data')['preSetting'];
+		// sync category if enabled.
+		if ($sync_now_options['sync_courses_category']) {
 			$this->sync_categories();
 		}
+		// get all caurses from moodle.
 		$courses = Helper::moowoodle_moodle_core_function_callback('get_courses');
+		// sync courses post data.
 		$this->update_posts($courses, 'course', 'course_cat', 'moowoodle_term');
-		if (isset($sync_now_options['sync_all_product']) && $sync_now_options['sync_all_product'] == "Enable") {
+		// sync product if enable.
+		if ($sync_now_options['sync_all_product']) {
 			$this->update_posts($courses, 'product', 'product_cat', 'woocommerce_term');
 		}
-		do_action('moowoodle_after_sync');
+		do_action('moowoodle_after_sync',$courses, $sync_now_options);
+		return 'success';
 	}
 	/**
 	 * Sync course categories from moodle.
@@ -29,6 +32,7 @@ class Synchronize {
 	 * @return void
 	 */
 	private function sync_categories() {
+		// get all category from moodle.
 		$categories = Helper::moowoodle_moodle_core_function_callback('get_categories');
 		if ($categories !== null) {
 			$this->update_categories($categories, 'course_cat', 'moowoodle_term');
@@ -51,6 +55,7 @@ class Synchronize {
 		$category_ids = array();
 		if (!empty($categories)) {
 			foreach ($categories as $category) {
+				// find and getthe term id for category.
 				$term_id = MWD()->Course->moowoodle_get_term_by_moodle_id($category['id'], $taxonomy, $meta_key)->term_id;
 				if (!$term_id) {
 					$name = $category['name'];
@@ -75,15 +80,17 @@ class Synchronize {
 				$category_ids[] = $category['id'];
 			}
 		}
-		$terms = get_terms(array('taxonomy' => $taxonomy, 'hide_empty' => false));
+		$terms = get_terms(array('taxonomy' => $taxonomy, 'hide_empty' => false ));
 		if ($terms) {
 			foreach ($terms as $term) {
 				$category_id = get_term_meta($term->term_id, '_category_id', true);
+				if ( empty($category_id) ) continue;
 				if (in_array($category_id, $category_ids)) {
 					$parent = get_term_meta($term->term_id, '_parent', true);
+					if ( empty($parent) ) continue; 
 					$parent_term_id = MWD()->Course->moowoodle_get_term_by_moodle_id($parent, $taxonomy, $meta_key)->term_id;
 					wp_update_term($term->term_id, $taxonomy, array('parent' => $parent_term_id));
-				} else if (!empty($category_id)) {
+				} else {
 					wp_delete_term($term->term_id, $taxonomy);
 				}
 			}
@@ -103,7 +110,6 @@ class Synchronize {
 		if (empty($post_type) || !post_type_exists($post_type) || empty($taxonomy) || !taxonomy_exists($taxonomy) || empty($meta_key)) {
 			return;
 		}
-		file_put_contents( plugin_dir_path(__FILE__) . "/error.log", date("d/m/Y H:i:s", time()) . ":courses:  : " . var_export($courses, true) . "\n", FILE_APPEND);
 		$course_ids = array();
 		if (!empty($courses)) {
 			foreach ($courses as $course) {
@@ -149,15 +155,18 @@ class Synchronize {
 		if ($posts) {
 			foreach ($posts as $post) {
 				$course_id = get_post_meta($post->ID, 'moodle_course_id', true);
+				if ( empty($course_id) ) continue;
 				if (array_key_exists($course_id, $course_ids)) {
 					$term_id = MWD()->Course->moowoodle_get_term_by_moodle_id($course_ids[$course_id], $taxonomy, $meta_key)->term_id;
+					if (!$term_id) continue;
 					wp_set_post_terms($post->ID, $term_id, $taxonomy);
-				} else if (!empty($course_id)) {
+				} else {
 					wp_delete_post($post->ID, false);
 				}
 			}
 		}
-	}	
+	}
+
 	/**
 	 * Returns post id by moodle category id.
 	 *
@@ -169,13 +178,9 @@ class Synchronize {
 		if (empty($course_id) || !is_numeric($course_id) || empty($post_type) || !post_type_exists($post_type)) {
 			return 0;
 		}
-		$posts = get_posts(array('post_type' => $post_type, 'numberposts' => -1));
-		if ($posts) {
-			foreach ($posts as $post) {
-				if (get_post_meta($post->ID, 'moodle_course_id', true) == $course_id) {
-					return $post->ID;
-				}
-			}
+		$posts = get_posts(array('post_type' => $post_type, 'numberposts' => -1,'meta_key' => 'moodle_course_id','meta_value' => $course_id,'meta_compare' => '=','fields' => 'ids',));
+		if ( $posts ) {
+			return $posts[0];
 		}
 		return 0;
 	}

@@ -8,7 +8,6 @@ import Button from './../CustomInputField/Button';
 import Log from './../CustomInputField/Log';
 import Section from './../CustomInputField/Section';
 import axios from 'axios';
-import ProOverlay from './ProOverlay';
 
 const TabContent = () => {
     const location = new URLSearchParams(useLocation().hash);
@@ -103,8 +102,6 @@ const TabContent = () => {
                 <div class="mw-section-child-wraper">
             { getFieldContent(tabValue.field_types) }
                 </div>
-                {MooWoodleAppLocalizer.porAdv && <ProOverlay />}
-
             </div>
 		</>
 	);

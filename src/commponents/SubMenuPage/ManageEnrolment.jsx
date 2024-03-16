@@ -10,7 +10,6 @@ import 'react-date-range/dist/theme/default.css';
 
 const ManageEnrolment = () => {
     const [enrolment, setEnrolment] = useState([]);
-    const [selectedRows, setSelectedRows] = useState([]);
     const [loading, setLoading] = useState(true);
     const LoadingSpinner = () => (
         <tr>
@@ -41,7 +40,7 @@ const ManageEnrolment = () => {
             setLoading(false);
           }
         };
-    
+        if(!MooWoodleAppLocalizer.porAdv)
         fetchData();
       }, []);
       const columns = [
@@ -96,12 +95,21 @@ const ManageEnrolment = () => {
           name: 'Actions',
           selector: row => row.course_name,
           cell: (row) => (
-            <form method="post">
-                <input type="hidden" name="user_id" value={row.moowoodle_moodle_user_id} />
-                <input type="hidden" name="order_id" value={row.order_id} />
-                <input type="hidden" name="course_id" value={row.linked_course_id} />
-                <button type="submit" onclick={`return confirm('Please confirm the decision for reenroll  ${row.user_login} to ${row.product} ?')`} name="reenroll" class="button-secondary">{row.action}</button>
-            </form>
+            <button 
+              type="button" 
+              onClick={ (e) => {
+                handleChangeEnrollment(
+                  e,
+                  row.user_login,
+                  row.product,
+                  row.moowoodle_moodle_user_id,
+                  row.order_id,
+                  row.linked_course_id
+                  ) 
+                } }
+              name={ row.status === 'Unenrolled' ? 'reenroll' : 'unenroll' }
+              class="button-secondary">{row.action}
+            </button>
           ),
         },
       ];
@@ -114,66 +122,106 @@ const ManageEnrolment = () => {
       ]);
       const ManageEnrolTable = () => (
         <>
-            <div class="mw-datepicker-wraper">
-            </div>
-            <div class="moowoodle-table-fuilter">
-            <DateRangePicker
-                onChange={item => setState([item.selection])}
-                showSelectionPreview={true}
-                moveRangeOnFirstSelection={false}
-                months={2}
-                ranges={datePicked}
-                direction="horizontal"
-                preventSnapRefocus={true}
-                calendarFocus="backwards"
-            />
-            </div>
         <DataTable
             columns={columns}
             data={enrolment}
             sortable
-            onSelectedRowsChange={handleSelectedRowsChange}
             progressPending={loading}
             progressComponent={<LoadingSpinner />}
         />
       </>
       );
-      const handleSelectedRowsChange = ( selecteRowsData ) => {
-        // You can set state or dispatch with something like Redux so we can use the retrieved data
-        setSelectedRows(selecteRowsData.selectedRows);
+      const handleChangeEnrollment = (event, user_login, product, moowoodle_moodle_user_id, order_id, linked_course_id  ) => {
+        // const moodleCourseIds = selectedRows.map(row => row.moodle_course_id);
+        console.log(event.target.name);
+        const data = {
+            status: event.target.name,
+            user_login: user_login,
+            product: product,
+            moowoodle_moodle_user_id: moowoodle_moodle_user_id,
+            order_id: order_id,
+            linked_course_id: linked_course_id
+        }
+        axios({
+          method: 'post',
+          url: `${MooWoodleAppLocalizer.rest_url}moowoodle/v1/unenroll-reenroll`,
+          headers: { 'X-WP-Nonce' : MooWoodleAppLocalizer.nonce },
+          data: {
+            data: data
+          },
+        }).then((response) => {
+            setTimeout(() => {
+            }, 2050);
+        }).catch((error) => {
+            console.error('Error:', error);
+        });
       };
-      console.log(enrolment);
 
 	return (
-		<>
-			<div class="mw-middle-child-container">
-                    <Tabs />
-                    <div class="mw-tab-content">
-                        <div class="mw-dynamic-fields-wrapper">
-                            <form class="mw-dynamic-form" action="options.php" method="post">
-                                <>
-                                <div class='mw-manage-enrolment-content '>
-                                    <div class="moowoodle-manage-enrolment  mw-pro-popup-overlay">
-                                        {
-                                            MooWoodleAppLocalizer.porAdv ?
-                                            <p>
-                                                <a class="mw-image-adv">
-                                                    <img src={MooWoodleAppLocalizer.manage_enrolment_img_url} />
-                                                </a>
-                                            </p>
-                                            :
-                                            <>
-                                            {ManageEnrolTable()}
-                                            </>
-                                        }
-                                    </div>
-                                </div>
-                                </>
-                            </form>
-                        </div>
+    <>
+    <div id="moowoodle-manage-enrolment" class="mw-section-wraper">
+      <div class="mw-middle-child-container">
+        <Tabs />
+        <div class="mw-tab-content">
+          <div class="mw-dynamic-fields-wrapper">
+            <form class="mw-dynamic-form" action="options.php" method="post">
+              <>
+                <div class="moowoodle-manage-enrolment  mw-pro-popup-overlay">
+                  <div class="mw-section-child-wraper">
+                    <div class="mw-header-search-wrap"><div class="mw-section-header">
+                      <h3>All Enrolments</h3>
                     </div>
+                      <div class="mw-header-search-section">
+                        <label class="moowoodle-course-search">
+                          <i class="dashicons dashicons-search"></i>
+                        </label>
+                        <input type="search" class="moowoodle-search-input" onChange={(e) => { console.log(e); }} placeholder="Search Course" aria-controls="moowoodle_table" />
+                      </div>
+                    </div>
+                    <div class="mw-form-group">
+                      <div class="mw-input-content">
+                        <div class="mw-manage-enrolment-content ">
+                          <div class="moowoodle-table-fuilter">
+
+                          <div class="mw-datepicker-wraper">
+                          </div>
+                          <div class="moowoodle-table-fuilter">
+                          {/* <DateRangePicker
+                              onChange={item => setState([item.selection])}
+                              showSelectionPreview={true}
+                              moveRangeOnFirstSelection={false}
+                              months={2}
+                              ranges={datePicked}
+                              direction="horizontal"
+                              preventSnapRefocus={true}
+                              calendarFocus="backwards"
+                          /> */}
+                          </div>
+                          </div>
+                          {
+                            MooWoodleAppLocalizer.porAdv ?
+                            <p>
+                                <a class="mw-image-adv">
+                                  <img src={MooWoodleAppLocalizer.manage_enrolment_img_url} />
+                                </a>
+                              </p>
+                              :
+                              <>
+                                {ManageEnrolTable()}
+                              </>
+                          }
+                        </div>
+                      </div>
+                    </div>
+                  </div>
                 </div>
-		</>
+              </>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+    </>
 	);
 }
 export default ManageEnrolment;

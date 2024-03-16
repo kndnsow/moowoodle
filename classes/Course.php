@@ -30,7 +30,7 @@ class Course {
 	 * @param array $args
 	 * @return array $courses
 	 */
-	public function mwd_get_courses ($args) {
+	public static function mwd_get_courses ($args) {
 		$args = array_merge(['post_type' => 'course', 'post_status' => 'publish'],$args);
 		return get_posts($args);
 	}
@@ -214,14 +214,15 @@ class Course {
 			$term = $this->moowoodle_get_term_by_moodle_id(get_post_meta($course_id, '_category_id', true), 'course_cat', '_category_id');
 			$catagory_name = esc_html($term->name);
 			$catagory_url = add_query_arg(['course_cat' => $term->slug, 'post_type' => 'course'], admin_url('edit.php'));
-			$moodle_url = esc_url(get_option('moowoodle_general_settings')["moodle_url"]) . 'course/edit.php?id=' . get_post_meta($course_id, 'moodle_course_id', true);
+			$moodle_course_id = get_post_meta($course_id, 'moodle_course_id', true);
+			$moodle_url = esc_url(get_option('moowoodle_general_settings')["moodle_url"]) . 'course/edit.php?id=' . $moodle_course_id;
 			$synced_products = [];
 			// get all products lincked with course.
 			$product_ids = get_posts(['post_type' => 'product', 'numberposts' => -1, 'post_status' => 'publish',  'fields' => 'ids', 'meta_key' => 'linked_course_id', 'meta_value' => $course_id]);
 			$count_enrolment = 0;
 			foreach ($product_ids as $product_id) {
 				$synced_products[esc_html(get_the_title($product_id))] = esc_url(admin_url() . 'post.php?post=' . $product_id->ID . '&action=edit');
-				$count_enrolment = $count_enrolment + get_post_meta($product_id, 'total_sales', true);
+				$count_enrolment = $count_enrolment + (int) get_post_meta($product_id, 'total_sales', true);
 			}
 			$date = wp_date('M j, Y', get_post_meta($course_id, '_course_startdate', true));
 			if ($course_enddate) {
@@ -235,6 +236,7 @@ class Course {
 			}
 			$formatted_courses[] = [
 				'id' => $course_id,
+				'moodle_course_id' => $moodle_course_id,
 				'moodle_url' => $moodle_url,
 				'course_name' => esc_html(get_the_title($course_id)),
 				'course_short_name' => get_post_meta($course_id, '_course_short_name', true),

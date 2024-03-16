@@ -4485,12 +4485,14 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "react");
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var react_router_dom__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! react-router-dom */ "./node_modules/react-router/dist/index.js");
+/* harmony import */ var react_router_dom__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! react-router-dom */ "./node_modules/react-router/dist/index.js");
 /* harmony import */ var _commponents_SubMenuPage_AllCourses__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./commponents/SubMenuPage/AllCourses */ "./src/commponents/SubMenuPage/AllCourses.jsx");
 /* harmony import */ var _commponents_SubMenuPage_ManageEnrolment__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./commponents/SubMenuPage/ManageEnrolment */ "./src/commponents/SubMenuPage/ManageEnrolment.jsx");
 /* harmony import */ var _commponents_SubMenuPage_Settings__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./commponents/SubMenuPage/Settings */ "./src/commponents/SubMenuPage/Settings.jsx");
 /* harmony import */ var _commponents_SubMenuPage_Synchronization__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./commponents/SubMenuPage/Synchronization */ "./src/commponents/SubMenuPage/Synchronization.jsx");
 /* harmony import */ var _commponents_Common_SideBanner__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./commponents/Common/SideBanner */ "./src/commponents/Common/SideBanner.jsx");
+/* harmony import */ var _commponents_Common_ProOverlay__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./commponents/Common/ProOverlay */ "./src/commponents/Common/ProOverlay.jsx");
+
 
 
 
@@ -4507,15 +4509,26 @@ const App = () => {
       element.parentNode.classList.add('current');
     }
   });
-  const location = new URLSearchParams((0,react_router_dom__WEBPACK_IMPORTED_MODULE_6__.useLocation)().hash);
+  const location = new URLSearchParams((0,react_router_dom__WEBPACK_IMPORTED_MODULE_7__.useLocation)().hash);
+  const [overlayVisible, setOverlayVisible] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(false);
+  const handleOverlayClick = event => {
+    console.log('hi');
+    if (event.target.classList.contains('mw-pro-popup-overlay')) {
+      setOverlayVisible(true);
+    }
+  };
+  const handleImageOverlayClick = () => {
+    setOverlayVisible(false);
+  };
   // console.log('sub ' + location.get('sub-tab'));
   return (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(react__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
     class: "mw-header-wapper"
   }, "MooWoodle"), (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
-    class: "mw-container"
+    class: "mw-container",
+    onClick: handleOverlayClick
   }, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
     class: "mw-middle-container-wrapper mw-horizontal-tabs"
-  }, location.get('tab') === 'moowoodle-all-courses' && (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_commponents_SubMenuPage_AllCourses__WEBPACK_IMPORTED_MODULE_1__["default"], null), location.get('tab') === 'moowoodle-manage-enrolment' && (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_commponents_SubMenuPage_ManageEnrolment__WEBPACK_IMPORTED_MODULE_2__["default"], null), location.get('tab') === 'moowoodle-settings' && (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_commponents_SubMenuPage_Settings__WEBPACK_IMPORTED_MODULE_3__["default"], null), location.get('tab') === 'moowoodle-synchronization' && (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_commponents_SubMenuPage_Synchronization__WEBPACK_IMPORTED_MODULE_4__["default"], null), (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_commponents_Common_SideBanner__WEBPACK_IMPORTED_MODULE_5__["default"], null))));
+  }, location.get('tab') === 'moowoodle-all-courses' && (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_commponents_SubMenuPage_AllCourses__WEBPACK_IMPORTED_MODULE_1__["default"], null), location.get('tab') === 'moowoodle-manage-enrolment' && (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_commponents_SubMenuPage_ManageEnrolment__WEBPACK_IMPORTED_MODULE_2__["default"], null), location.get('tab') === 'moowoodle-settings' && (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_commponents_SubMenuPage_Settings__WEBPACK_IMPORTED_MODULE_3__["default"], null), location.get('tab') === 'moowoodle-synchronization' && (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_commponents_SubMenuPage_Synchronization__WEBPACK_IMPORTED_MODULE_4__["default"], null), (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_commponents_Common_SideBanner__WEBPACK_IMPORTED_MODULE_5__["default"], null), MooWoodleAppLocalizer.porAdv && (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_commponents_Common_ProOverlay__WEBPACK_IMPORTED_MODULE_6__["default"], null))));
 };
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (App);
 
@@ -4621,7 +4634,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "react");
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var react_router_dom__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! react-router-dom */ "./node_modules/react-router/dist/index.js");
+/* harmony import */ var react_router_dom__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! react-router-dom */ "./node_modules/react-router/dist/index.js");
 /* harmony import */ var _CustomInputField_TextBox__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./../CustomInputField/TextBox */ "./src/commponents/CustomInputField/TextBox.jsx");
 /* harmony import */ var _CustomInputField_ToggleCheckbox__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./../CustomInputField/ToggleCheckbox */ "./src/commponents/CustomInputField/ToggleCheckbox.jsx");
 /* harmony import */ var _CustomInputField_Select__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./../CustomInputField/Select */ "./src/commponents/CustomInputField/Select.jsx");
@@ -4629,9 +4642,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _CustomInputField_Button__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./../CustomInputField/Button */ "./src/commponents/CustomInputField/Button.jsx");
 /* harmony import */ var _CustomInputField_Log__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./../CustomInputField/Log */ "./src/commponents/CustomInputField/Log.jsx");
 /* harmony import */ var _CustomInputField_Section__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./../CustomInputField/Section */ "./src/commponents/CustomInputField/Section.jsx");
-/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! axios */ "./node_modules/axios/lib/axios.js");
-/* harmony import */ var _ProOverlay__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./ProOverlay */ "./src/commponents/Common/ProOverlay.jsx");
-
+/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! axios */ "./node_modules/axios/lib/axios.js");
 
 
 
@@ -4644,7 +4655,7 @@ __webpack_require__.r(__webpack_exports__);
 
 
 const TabContent = () => {
-  const location = new URLSearchParams((0,react_router_dom__WEBPACK_IMPORTED_MODULE_9__.useLocation)().hash);
+  const location = new URLSearchParams((0,react_router_dom__WEBPACK_IMPORTED_MODULE_8__.useLocation)().hash);
   const tabValue = MooWoodleAppLocalizer.library[location.get('tab')][location.get('sub-tab')];
   const [successMsg, setSuccessMsg] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)('');
   const [Setting, setSetting] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(MooWoodleAppLocalizer.preSettings);
@@ -4672,7 +4683,7 @@ const TabContent = () => {
     timeoutId = setTimeout(() => {
       if (Setting[tabValue.setting] && settingChanged.current) {
         settingChanged.current = false;
-        (0,axios__WEBPACK_IMPORTED_MODULE_10__["default"])({
+        (0,axios__WEBPACK_IMPORTED_MODULE_9__["default"])({
           method: 'post',
           url: `${MooWoodleAppLocalizer.rest_url}moowoodle/v1/save-moowoodle-setting`,
           headers: {
@@ -4755,7 +4766,7 @@ const TabContent = () => {
     class: "mw-section-wraper"
   }, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
     class: "mw-section-child-wraper"
-  }, getFieldContent(tabValue.field_types)), MooWoodleAppLocalizer.porAdv && (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_ProOverlay__WEBPACK_IMPORTED_MODULE_8__["default"], null)));
+  }, getFieldContent(tabValue.field_types))));
 };
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (TabContent);
 
@@ -4920,7 +4931,16 @@ const Button = props => {
     }
     ;
   };
-  const syncUser = () => {};
+  const syncUser = route => {
+    try {
+      handleAxios({
+        preSetting: props.field.preSetting
+      }, route);
+    } catch (error) {
+      console.log(error);
+    }
+    ;
+  };
   const handleAxios = async (data, route) => {
     try {
       const response = await (0,axios__WEBPACK_IMPORTED_MODULE_1__["default"])({
@@ -5058,10 +5078,9 @@ const MultipleCheckboxs = props => {
       }, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("input", {
         id: checkboxOptions.id,
         className: `mw-toggle-checkbox ${checkboxOptions.id} ${checkboxOptions.checked === 'forced' ? ' forceCheckCheckbox' : ''}`,
-        value: "Enable",
         type: "checkbox",
         name: checkboxOptions.name,
-        defaultChecked: field.preSetting?.[checkboxOptions.name] === 'Enable',
+        defaultChecked: field.preSetting[checkboxOptions.name],
         onChange: e => {
           props.onChange?.(e);
         }
@@ -5294,12 +5313,10 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "react");
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! axios */ "./node_modules/axios/lib/axios.js");
+/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! axios */ "./node_modules/axios/lib/axios.js");
 /* harmony import */ var _Common_Tabs__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./../Common/Tabs */ "./src/commponents/Common/Tabs.jsx");
-/* harmony import */ var _Common_ProOverlay__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./../Common/ProOverlay */ "./src/commponents/Common/ProOverlay.jsx");
-/* harmony import */ var _assets_images_logo_moowoodle_pro_png__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../../assets/images/logo-moowoodle-pro.png */ "./assets/images/logo-moowoodle-pro.png");
-/* harmony import */ var react_data_table_component__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! react-data-table-component */ "./node_modules/react-data-table-component/dist/index.cjs.js");
-
+/* harmony import */ var _assets_images_logo_moowoodle_pro_png__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../../assets/images/logo-moowoodle-pro.png */ "./assets/images/logo-moowoodle-pro.png");
+/* harmony import */ var react_data_table_component__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! react-data-table-component */ "./node_modules/react-data-table-component/dist/index.cjs.js");
 
 
 
@@ -5315,7 +5332,7 @@ const LoadingSpinner = () => (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement
   className: "loading-spinner"
 }, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("img", {
   className: "lodaer-img-overlay",
-  src: _assets_images_logo_moowoodle_pro_png__WEBPACK_IMPORTED_MODULE_3__,
+  src: _assets_images_logo_moowoodle_pro_png__WEBPACK_IMPORTED_MODULE_2__,
   alt: ""
 }))));
 const AllCourses = () => {
@@ -5368,7 +5385,7 @@ const AllCourses = () => {
     // Fetch data from the WordPress REST API
     const fetchData = async () => {
       try {
-        const response = await axios__WEBPACK_IMPORTED_MODULE_5__["default"].get(`${MooWoodleAppLocalizer.rest_url}moowoodle/v1/fetch-all-courses`, {
+        const response = await axios__WEBPACK_IMPORTED_MODULE_4__["default"].get(`${MooWoodleAppLocalizer.rest_url}moowoodle/v1/fetch-all-courses`, {
           headers: {
             "X-WP-Nonce": MooWoodleAppLocalizer.nonce
           }
@@ -5386,7 +5403,33 @@ const AllCourses = () => {
     // You can set state or dispatch with something like Redux so we can use the retrieved data
     setSelectedRows(selecteRowsData.selectedRows);
   };
-  console.log(courses);
+  const handleBulkAction = async () => {
+    // Get the selected option from the dropdown
+    const selectedAction = document.getElementById("bulk-action-selector-top").value;
+    console.log('Selected action:', selectedAction);
+
+    // Extract moodle_course_id from selectedRows
+    const moodleCourseIds = selectedRows.map(row => row.moodle_course_id);
+    console.log('Selected moodle course ids:', moodleCourseIds);
+    (0,axios__WEBPACK_IMPORTED_MODULE_4__["default"])({
+      method: 'post',
+      url: `${MooWoodleAppLocalizer.rest_url}moowoodle/v1/all-course-bulk-action`,
+      headers: {
+        'X-WP-Nonce': MooWoodleAppLocalizer.nonce
+      },
+      data: {
+        selectedAction: selectedAction,
+        moodleCourseIds: moodleCourseIds
+      }
+    }).then(response => {
+      setSuccessMsg("Settings Saved");
+      setTimeout(() => {
+        setSuccessMsg('');
+      }, 2050);
+    }).catch(error => {
+      console.error('Error:', error);
+    });
+  };
   return (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(react__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
     class: "mw-middle-child-container"
   }, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_Common_Tabs__WEBPACK_IMPORTED_MODULE_1__["default"], null), (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
@@ -5437,7 +5480,8 @@ const AllCourses = () => {
   }, MooWoodleAppLocalizer.update_product)), (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("button", {
     className: `button-secondary bulk-action-select-apply ${MooWoodleAppLocalizer.pro_popup_overlay}`,
     name: "bulk-action-apply",
-    type: "button"
+    type: "button",
+    onClick: handleBulkAction
   }, MooWoodleAppLocalizer.apply), (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
     dangerouslySetInnerHTML: {
       __html: MooWoodleAppLocalizer.pro_sticker
@@ -5453,7 +5497,7 @@ const AllCourses = () => {
     class: "moowoodle-search-input",
     placeholder: "Search Course",
     "aria-controls": "moowoodle_table"
-  })))), (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(react_data_table_component__WEBPACK_IMPORTED_MODULE_4__["default"], {
+  })))), (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(react_data_table_component__WEBPACK_IMPORTED_MODULE_3__["default"], {
     columns: columns,
     data: courses,
     selectableRows: true,
@@ -5464,7 +5508,7 @@ const AllCourses = () => {
     className: "mw-sync-paragraph"
   }, MooWoodleAppLocalizer.cannot_find_course, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("a", {
     href: `${MooWoodleAppLocalizer.admin_url}admin.php?page=moowoodle#&tab=moowoodle-synchronization&sub-tab=moowoodle-sync-now`
-  }, MooWoodleAppLocalizer.sync_moodle_courses)))))), MooWoodleAppLocalizer.porAdv && (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_Common_ProOverlay__WEBPACK_IMPORTED_MODULE_2__["default"], null)))))));
+  }, MooWoodleAppLocalizer.sync_moodle_courses))))))))))));
 };
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (AllCourses);
 
@@ -5503,7 +5547,6 @@ __webpack_require__.r(__webpack_exports__);
 
 const ManageEnrolment = () => {
   const [enrolment, setEnrolment] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)([]);
-  const [selectedRows, setSelectedRows] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)([]);
   const [loading, setLoading] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(true);
   const LoadingSpinner = () => (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("tr", null, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("td", {
     colSpan: MooWoodleAppLocalizer.from_heading.length,
@@ -5533,7 +5576,7 @@ const ManageEnrolment = () => {
         setLoading(false);
       }
     };
-    fetchData();
+    if (!MooWoodleAppLocalizer.porAdv) fetchData();
   }, []);
   const columns = [{
     name: 'Course Name',
@@ -5575,59 +5618,57 @@ const ManageEnrolment = () => {
   }, {
     name: 'Actions',
     selector: row => row.course_name,
-    cell: row => (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("form", {
-      method: "post"
-    }, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("input", {
-      type: "hidden",
-      name: "user_id",
-      value: row.moowoodle_moodle_user_id
-    }), (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("input", {
-      type: "hidden",
-      name: "order_id",
-      value: row.order_id
-    }), (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("input", {
-      type: "hidden",
-      name: "course_id",
-      value: row.linked_course_id
-    }), (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("button", {
-      type: "submit",
-      onclick: `return confirm('Please confirm the decision for reenroll  ${row.user_login} to ${row.product} ?')`,
-      name: "reenroll",
+    cell: row => (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("button", {
+      type: "button",
+      onClick: e => {
+        handleChangeEnrollment(e, row.user_login, row.product, row.moowoodle_moodle_user_id, row.order_id, row.linked_course_id);
+      },
+      name: row.status === 'Unenrolled' ? 'reenroll' : 'unenroll',
       class: "button-secondary"
-    }, row.action))
+    }, row.action)
   }];
   const [datePicked, setDatePicked] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)([{
     startDate: new Date(),
     endDate: (0,date_fns__WEBPACK_IMPORTED_MODULE_8__.addDays)(new Date(), 7),
     key: 'selection'
   }]);
-  const ManageEnrolTable = () => (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(react__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
-    class: "mw-datepicker-wraper"
-  }), (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
-    class: "moowoodle-table-fuilter"
-  }, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(react_date_range__WEBPACK_IMPORTED_MODULE_4__.DateRangePicker, {
-    onChange: item => setState([item.selection]),
-    showSelectionPreview: true,
-    moveRangeOnFirstSelection: false,
-    months: 2,
-    ranges: datePicked,
-    direction: "horizontal",
-    preventSnapRefocus: true,
-    calendarFocus: "backwards"
-  })), (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(react_data_table_component__WEBPACK_IMPORTED_MODULE_3__["default"], {
+  const ManageEnrolTable = () => (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(react__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(react_data_table_component__WEBPACK_IMPORTED_MODULE_3__["default"], {
     columns: columns,
     data: enrolment,
     sortable: true,
-    onSelectedRowsChange: handleSelectedRowsChange,
     progressPending: loading,
     progressComponent: (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(LoadingSpinner, null)
   }));
-  const handleSelectedRowsChange = selecteRowsData => {
-    // You can set state or dispatch with something like Redux so we can use the retrieved data
-    setSelectedRows(selecteRowsData.selectedRows);
+  const handleChangeEnrollment = (event, user_login, product, moowoodle_moodle_user_id, order_id, linked_course_id) => {
+    // const moodleCourseIds = selectedRows.map(row => row.moodle_course_id);
+    console.log(event.target.name);
+    const data = {
+      status: event.target.name,
+      user_login: user_login,
+      product: product,
+      moowoodle_moodle_user_id: moowoodle_moodle_user_id,
+      order_id: order_id,
+      linked_course_id: linked_course_id
+    };
+    (0,axios__WEBPACK_IMPORTED_MODULE_7__["default"])({
+      method: 'post',
+      url: `${MooWoodleAppLocalizer.rest_url}moowoodle/v1/unenroll-reenroll`,
+      headers: {
+        'X-WP-Nonce': MooWoodleAppLocalizer.nonce
+      },
+      data: {
+        data: data
+      }
+    }).then(response => {
+      setTimeout(() => {}, 2050);
+    }).catch(error => {
+      console.error('Error:', error);
+    });
   };
-  console.log(enrolment);
   return (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(react__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
+    id: "moowoodle-manage-enrolment",
+    class: "mw-section-wraper"
+  }, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
     class: "mw-middle-child-container"
   }, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_Common_Tabs__WEBPACK_IMPORTED_MODULE_1__["default"], null), (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
     class: "mw-tab-content"
@@ -5638,14 +5679,44 @@ const ManageEnrolment = () => {
     action: "options.php",
     method: "post"
   }, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(react__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
+    class: "moowoodle-manage-enrolment  mw-pro-popup-overlay"
+  }, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
+    class: "mw-section-child-wraper"
+  }, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
+    class: "mw-header-search-wrap"
+  }, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
+    class: "mw-section-header"
+  }, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("h3", null, "All Enrolments")), (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
+    class: "mw-header-search-section"
+  }, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("label", {
+    class: "moowoodle-course-search"
+  }, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("i", {
+    class: "dashicons dashicons-search"
+  })), (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("input", {
+    type: "search",
+    class: "moowoodle-search-input",
+    onChange: e => {
+      console.log(e);
+    },
+    placeholder: "Search Course",
+    "aria-controls": "moowoodle_table"
+  }))), (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
+    class: "mw-form-group"
+  }, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
+    class: "mw-input-content"
+  }, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
     class: "mw-manage-enrolment-content "
   }, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
-    class: "moowoodle-manage-enrolment  mw-pro-popup-overlay"
-  }, MooWoodleAppLocalizer.porAdv ? (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("p", null, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("a", {
+    class: "moowoodle-table-fuilter"
+  }, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
+    class: "mw-datepicker-wraper"
+  }), (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
+    class: "moowoodle-table-fuilter"
+  })), MooWoodleAppLocalizer.porAdv ? (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("p", null, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("a", {
     class: "mw-image-adv"
   }, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("img", {
     src: MooWoodleAppLocalizer.manage_enrolment_img_url
-  }))) : (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(react__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, ManageEnrolTable())))))))));
+  }))) : (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(react__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, ManageEnrolTable())))))))))))));
 };
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (ManageEnrolment);
 

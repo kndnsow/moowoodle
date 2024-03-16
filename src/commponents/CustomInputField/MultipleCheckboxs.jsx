@@ -13,10 +13,9 @@ const MultipleCheckboxs = (props) => {
                                 className={`mw-toggle-checkbox ${checkboxOptions.id} ${
                                     checkboxOptions.checked === 'forced' ? ' forceCheckCheckbox' : ''
                                 }`}
-                                value="Enable"
                                 type="checkbox"
                                 name={checkboxOptions.name}
-                                defaultChecked={field.preSetting?.[checkboxOptions.name] === 'Enable'}
+                                defaultChecked={field.preSetting[checkboxOptions.name]}
                                 onChange={(e) => {
                                     props.onChange?.(e);
                                 }}
