@@ -4485,13 +4485,17 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "react");
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var react_router_dom__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! react-router-dom */ "./node_modules/react-router/dist/index.js");
+/* harmony import */ var react_router_dom__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! react-router-dom */ "./node_modules/react-router/dist/index.js");
 /* harmony import */ var _commponents_SubMenuPage_AllCourses__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./commponents/SubMenuPage/AllCourses */ "./src/commponents/SubMenuPage/AllCourses.jsx");
 /* harmony import */ var _commponents_SubMenuPage_ManageEnrolment__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./commponents/SubMenuPage/ManageEnrolment */ "./src/commponents/SubMenuPage/ManageEnrolment.jsx");
 /* harmony import */ var _commponents_SubMenuPage_Settings__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./commponents/SubMenuPage/Settings */ "./src/commponents/SubMenuPage/Settings.jsx");
 /* harmony import */ var _commponents_SubMenuPage_Synchronization__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./commponents/SubMenuPage/Synchronization */ "./src/commponents/SubMenuPage/Synchronization.jsx");
 /* harmony import */ var _commponents_Common_SideBanner__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./commponents/Common/SideBanner */ "./src/commponents/Common/SideBanner.jsx");
 /* harmony import */ var _commponents_Common_ProOverlay__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./commponents/Common/ProOverlay */ "./src/commponents/Common/ProOverlay.jsx");
+/* harmony import */ var _assets_images_dualcube_png__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./assets/images/dualcube.png */ "./src/assets/images/dualcube.png");
+/* harmony import */ var _styles_admin_css__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./styles/admin.css */ "./src/styles/admin.css");
+/* harmony import */ var _utils_moowoodle_admin_frontend_js__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./utils/moowoodle-admin-frontend.js */ "./src/utils/moowoodle-admin-frontend.js");
+/* harmony import */ var _utils_moowoodle_admin_frontend_js__WEBPACK_IMPORTED_MODULE_9___default = /*#__PURE__*/__webpack_require__.n(_utils_moowoodle_admin_frontend_js__WEBPACK_IMPORTED_MODULE_9__);
 
 
 
@@ -4500,8 +4504,18 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
+
+
+
+// css and scss file for global styling.
+
+
+// utils js file for global customisation.
 
 const App = () => {
+  const {
+    __
+  } = wp.i18n;
   const currentUrl = window.location.href;
   document.querySelectorAll('#toplevel_page_moowoodle>ul>li>a').forEach(element => {
     element.parentNode.classList.remove('current');
@@ -4509,7 +4523,7 @@ const App = () => {
       element.parentNode.classList.add('current');
     }
   });
-  const location = new URLSearchParams((0,react_router_dom__WEBPACK_IMPORTED_MODULE_7__.useLocation)().hash);
+  const location = new URLSearchParams((0,react_router_dom__WEBPACK_IMPORTED_MODULE_10__.useLocation)().hash);
   const [overlayVisible, setOverlayVisible] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(false);
   const handleOverlayClick = event => {
     console.log('hi');
@@ -4528,7 +4542,15 @@ const App = () => {
     onClick: handleOverlayClick
   }, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
     class: "mw-middle-container-wrapper mw-horizontal-tabs"
-  }, location.get('tab') === 'moowoodle-all-courses' && (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_commponents_SubMenuPage_AllCourses__WEBPACK_IMPORTED_MODULE_1__["default"], null), location.get('tab') === 'moowoodle-manage-enrolment' && (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_commponents_SubMenuPage_ManageEnrolment__WEBPACK_IMPORTED_MODULE_2__["default"], null), location.get('tab') === 'moowoodle-settings' && (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_commponents_SubMenuPage_Settings__WEBPACK_IMPORTED_MODULE_3__["default"], null), location.get('tab') === 'moowoodle-synchronization' && (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_commponents_SubMenuPage_Synchronization__WEBPACK_IMPORTED_MODULE_4__["default"], null), (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_commponents_Common_SideBanner__WEBPACK_IMPORTED_MODULE_5__["default"], null), MooWoodleAppLocalizer.porAdv && (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_commponents_Common_ProOverlay__WEBPACK_IMPORTED_MODULE_6__["default"], null))));
+  }, location.get('tab') === 'moowoodle-all-courses' && (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_commponents_SubMenuPage_AllCourses__WEBPACK_IMPORTED_MODULE_1__["default"], null), location.get('tab') === 'moowoodle-manage-enrolment' && (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_commponents_SubMenuPage_ManageEnrolment__WEBPACK_IMPORTED_MODULE_2__["default"], null), location.get('tab') === 'moowoodle-settings' && (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_commponents_SubMenuPage_Settings__WEBPACK_IMPORTED_MODULE_3__["default"], null), location.get('tab') === 'moowoodle-synchronization' && (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_commponents_SubMenuPage_Synchronization__WEBPACK_IMPORTED_MODULE_4__["default"], null), (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_commponents_Common_SideBanner__WEBPACK_IMPORTED_MODULE_5__["default"], null), !MooWoodleAppLocalizer.porAdv && (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_commponents_Common_ProOverlay__WEBPACK_IMPORTED_MODULE_6__["default"], null))), (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
+    class: "dualcube-admin-footer",
+    id: "dualcube-admin-footer"
+  }, __('Powered by'), " ", (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("a", {
+    href: MooWoodleAppLocalizer.dualcubeUrl,
+    target: "_blank"
+  }, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("img", {
+    src: _assets_images_dualcube_png__WEBPACK_IMPORTED_MODULE_7__
+  })), __('ualCube'), " \xA9 ", new Date().getFullYear()));
 };
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (App);
 
@@ -4848,16 +4870,31 @@ __webpack_require__.r(__webpack_exports__);
 
 
 const Button = props => {
+  const {
+    __
+  } = wp.i18n;
   let course_id = '';
   let user_id = '';
   let message = '';
   const [emptyDivContaint, setEmptyDivContaint] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)('');
   const handleButtonClick = async (event, route) => {
     event.target.classList.add("active");
+    const testConnectionActions = {
+      get_site_info: __('Connecting to Moodle'),
+      get_catagory: __('Course Category Sync'),
+      get_course_by_fuild: __('Course Data Sync'),
+      get_course: __('Course Sync'),
+      create_user: __('User Creation'),
+      get_user: __('User Data Sync'),
+      update_user: __('User Data Update'),
+      enrol_users: __('User Enrolment'),
+      unenrol_users: __('User Unenrolment'),
+      delete_users: __('All Test')
+    };
     console.log(event.currentTarget.parentElement.parentElement.querySelector('.test-connection-contains'));
     switch (route) {
       case "test-connection":
-        await testCunnection(Object.keys(MooWoodleAppLocalizer.testconnection_actions), MooWoodleAppLocalizer.testconnection_actions, route, message);
+        await testCunnection(Object.keys(testConnectionActions), testConnectionActions, route, message);
         event.target.classList.remove("active");
         break;
       case "sync-course-options":
@@ -5315,7 +5352,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
 /* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! axios */ "./node_modules/axios/lib/axios.js");
 /* harmony import */ var _Common_Tabs__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./../Common/Tabs */ "./src/commponents/Common/Tabs.jsx");
-/* harmony import */ var _assets_images_logo_moowoodle_pro_png__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../../assets/images/logo-moowoodle-pro.png */ "./assets/images/logo-moowoodle-pro.png");
+/* harmony import */ var _assets_images_logo_moowoodle_pro_png__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./../../assets/images/logo-moowoodle-pro.png */ "./src/assets/images/logo-moowoodle-pro.png");
 /* harmony import */ var react_data_table_component__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! react-data-table-component */ "./node_modules/react-data-table-component/dist/index.cjs.js");
 
 
@@ -5336,18 +5373,21 @@ const LoadingSpinner = () => (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement
   alt: ""
 }))));
 const AllCourses = () => {
+  const {
+    __
+  } = wp.i18n;
   const [courses, setCourses] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)([]);
   const [selectedRows, setSelectedRows] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)([]);
   const [loading, setLoading] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(true);
   const columns = [{
-    name: 'Course Name',
+    name: __('Course Name'),
     selector: row => row.course_name,
     cell: row => (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("a", {
       href: row.moodle_url
     }, row.course_name),
     sortable: true
   }, {
-    name: 'Short Name',
+    name: __('Short Name'),
     selector: row => row.course_short_name,
     sortable: true
   }, {
@@ -5359,21 +5399,21 @@ const AllCourses = () => {
     }, productName), (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("br", null))) : '-',
     sortable: true
   }, {
-    name: 'Category Name',
+    name: __('Category Name'),
     selector: row => row.catagory_name,
     cell: row => (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("a", {
       href: row.catagory_url
     }, row.catagory_name),
     sortable: true
   }, {
-    name: 'Enrolled Users',
+    name: __('Enrolled Users'),
     selector: row => row.enroled_user,
     sortable: true
   }, {
-    name: 'Date',
+    name: __('Date'),
     selector: row => row.date
   }, {
-    name: 'Actions',
+    name: __('Actions'),
     selector: row => row.course_name,
     cell: row => (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
       dangerouslySetInnerHTML: {
@@ -5449,7 +5489,7 @@ const AllCourses = () => {
     class: "mw-header-search-wrap"
   }, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
     class: "mw-section-header"
-  }, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("h3", null, "Courses"))), (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
+  }, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("h3", null, __('Courses')))), (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
     class: "mw-section-containt"
   }, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
     class: "mw-form-group"
@@ -5466,23 +5506,23 @@ const AllCourses = () => {
   }, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("label", {
     htmlFor: "bulk-action-selector-top",
     className: "screen-reader-text"
-  }, MooWoodleAppLocalizer.bulk_actions_label), (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("select", {
+  }, __('Select bulk action')), (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("select", {
     name: "action",
     id: "bulk-action-selector-top"
   }, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("option", {
     value: "-1"
-  }, MooWoodleAppLocalizer.bulk_actions), (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("option", {
+  }, l__('Bulk Actions')), (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("option", {
     value: "sync_courses"
-  }, MooWoodleAppLocalizer.sync_course), (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("option", {
+  }, __('Sync Course')), (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("option", {
     value: "sync_create_product"
-  }, MooWoodleAppLocalizer.create_product), (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("option", {
+  }, __('Create Product')), (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("option", {
     value: "sync_update_product"
-  }, MooWoodleAppLocalizer.update_product)), (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("button", {
+  }, __('Update Product'))), (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("button", {
     className: `button-secondary bulk-action-select-apply ${MooWoodleAppLocalizer.pro_popup_overlay}`,
     name: "bulk-action-apply",
     type: "button",
     onClick: handleBulkAction
-  }, MooWoodleAppLocalizer.apply), (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
+  }, __('Apply')), (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
     dangerouslySetInnerHTML: {
       __html: MooWoodleAppLocalizer.pro_sticker
     }
@@ -5506,9 +5546,9 @@ const AllCourses = () => {
     progressComponent: (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(LoadingSpinner, null)
   }), (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("br", null), (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("p", {
     className: "mw-sync-paragraph"
-  }, MooWoodleAppLocalizer.cannot_find_course, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("a", {
+  }, __('Cannot find your course in this list?'), (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("a", {
     href: `${MooWoodleAppLocalizer.admin_url}admin.php?page=moowoodle#&tab=moowoodle-synchronization&sub-tab=moowoodle-sync-now`
-  }, MooWoodleAppLocalizer.sync_moodle_courses))))))))))));
+  }, __('Synchronize Moodle Courses from here.')))))))))))));
 };
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (AllCourses);
 
@@ -5529,7 +5569,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
 /* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! axios */ "./node_modules/axios/lib/axios.js");
 /* harmony import */ var _Common_Tabs__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./../Common/Tabs */ "./src/commponents/Common/Tabs.jsx");
-/* harmony import */ var _assets_images_logo_moowoodle_pro_png__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../../assets/images/logo-moowoodle-pro.png */ "./assets/images/logo-moowoodle-pro.png");
+/* harmony import */ var _assets_images_logo_moowoodle_pro_png__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./../../assets/images/logo-moowoodle-pro.png */ "./src/assets/images/logo-moowoodle-pro.png");
 /* harmony import */ var react_data_table_component__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! react-data-table-component */ "./node_modules/react-data-table-component/dist/index.cjs.js");
 /* harmony import */ var date_fns__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! date-fns */ "./node_modules/date-fns/addDays.mjs");
 /* harmony import */ var react_date_range__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! react-date-range */ "./node_modules/react-date-range/dist/index.js");
@@ -5791,6 +5831,143 @@ const Synchronization = () => {
   }, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_Common_TabContent__WEBPACK_IMPORTED_MODULE_2__["default"], null)))));
 };
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (Synchronization);
+
+/***/ }),
+
+/***/ "./src/utils/moowoodle-admin-frontend.js":
+/*!***********************************************!*\
+  !*** ./src/utils/moowoodle-admin-frontend.js ***!
+  \***********************************************/
+/***/ (() => {
+
+(function ($) {
+  'use strict';
+
+  $(document).ready(function () {
+    $(".mw-pro-popup-overlay").click(function () {
+      $(".mw-image-overlay").css({
+        "opacity": "1",
+        "visibility": "visible"
+      });
+    });
+    $('.mw-image-overlay').click(function () {
+      $(".mw-image-overlay").css({
+        "opacity": "0",
+        "visibility": "hidden"
+      });
+    });
+    //multiple chekbox unchake for pro
+    function handleCheckboxClick(event) {
+      const checkbox = event.target;
+      // Toggle the checkbox state
+      checkbox.checked = !checkbox.checked;
+    }
+    const checkboxes = document.querySelectorAll('.mw-pro-popup-overlay input[type="checkbox"]');
+    // Add event listeners to checkboxes
+    checkboxes.forEach(checkbox => {
+      // Uncheck if already checked
+      if (checkbox.checked) {
+        checkbox.checked = false;
+      }
+      // Add click event listener
+      checkbox.addEventListener('click', handleCheckboxClick);
+    });
+    //forced checked checkbox
+    const forcecheckbox = document.querySelectorAll('.forceCheckCheckbox');
+    var warningShown = false;
+    // Add a click event listener to the checkbox
+    if (forcecheckbox) forcecheckbox.forEach((checkbox, index) => {
+      checkbox.addEventListener('click', function () {
+        // Once checked, disable the checkbox
+        if (!checkbox.checked) {
+          if (!warningShown) {
+            const warningHTML = '<div class="mw-warning-massage" id="warningMessage-' + index + '" style="position: relative;">' + MooWoodleAppLocalizer.lang.warning_to_force_checked + '</div>';
+            checkbox.parentElement.insertAdjacentHTML("afterend", warningHTML);
+            warningShown = true;
+          }
+          checkbox.checked = true;
+        }
+      });
+    });
+    //copy text-input value to clipboard 
+    $('.mw-copytoclip').on("click", function () {
+      var $button = $(this);
+      var $inputField = $button.siblings('.mw-setting-form-input');
+      var inputValue = $inputField.val();
+      copyToClipboard(inputValue);
+      $button.text(MooWoodleAppLocalizer.lang.Copied).prop('disabled', true);
+      $('.mw-copytoclip').not($button).prop('disabled', false).text(MooWoodleAppLocalizer.lang.Copy);
+    });
+    $('.mw-setting-form-input').on("input", function () {
+      var $inputField = $(this);
+      var $button = $inputField.siblings('.mw-copytoclip');
+      $button.prop('disabled', false).text(MooWoodleAppLocalizer.lang.Copy);
+    });
+    function copyToClipboard(text) {
+      var tempInput = document.createElement("textarea");
+      tempInput.style.position = 'absolute';
+      tempInput.style.left = '-1000px';
+      tempInput.value = text;
+      document.body.appendChild(tempInput);
+      tempInput.select();
+      document.execCommand("copy");
+      document.body.removeChild(tempInput);
+    }
+    //multiple-checkboxs select/Deselect all
+    const button = document.getElementById("selectDeselectButton");
+    if (button != null) {
+      button.addEventListener("click", function () {
+        const checkedEnabledCheckboxes = document.querySelectorAll(".mw-toggle-checkbox:checked:enabled");
+        const uncheckedCheckboxes = document.querySelectorAll(".mw-toggle-checkbox:not(:checked):enabled");
+        if (checkedEnabledCheckboxes.length >= uncheckedCheckboxes.length) {
+          checkedEnabledCheckboxes.forEach(function (checkbox) {
+            if (!checkbox.disabled) checkbox.checked = false;
+          });
+        } else {
+          uncheckedCheckboxes.forEach(function (checkbox) {
+            if (!checkbox.disabled) checkbox.checked = true;
+          });
+        }
+      });
+    }
+    //sso generat key
+    const inputDiv = document.querySelector(".mw-textbox-input-wraper");
+    const ssKeyInput = document.getElementById("moowoodle-sso-secret-key");
+    if (ssKeyInput != null) {
+      const generatButton = document.createElement("div");
+      generatButton.innerHTML = '<button class="generat-key button-secondary" label="Generot Key" type="button">Generate</button>';
+      inputDiv.appendChild(generatButton);
+      let warningMessage = null;
+      $(".generat-key").on("click", function () {
+        const randomKey = generateRandomKey(8);
+        ssKeyInput.value = randomKey;
+        if (!warningMessage) {
+          warningMessage = document.createElement("div");
+          warningMessage.id = "warningMessage";
+          warningMessage.className = "mw-warning-massage";
+          warningMessage.style.color = "red";
+          warningMessage.innerText = "Remember to save your recent changes to ensure they're preserved.";
+          ssKeyInput.insertAdjacentElement("afterend", warningMessage);
+        }
+      });
+      ssKeyInput.addEventListener("input", function () {
+        if (warningMessage) {
+          warningMessage.remove();
+          warningMessage = null;
+        }
+      });
+      function generateRandomKey(length) {
+        const characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+        let key = "";
+        for (let i = 0; i < length; i++) {
+          const randomIndex = Math.floor(Math.random() * characters.length);
+          key += characters.charAt(randomIndex);
+        }
+        return key;
+      }
+    }
+  });
+})(jQuery);
 
 /***/ }),
 
@@ -27703,6 +27880,19 @@ __webpack_require__.r(__webpack_exports__);
 
 /***/ }),
 
+/***/ "./src/styles/admin.css":
+/*!******************************!*\
+  !*** ./src/styles/admin.css ***!
+  \******************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+// extracted by mini-css-extract-plugin
+
+
+/***/ }),
+
 /***/ "./node_modules/object-assign/index.js":
 /*!*********************************************!*\
   !*** ./node_modules/object-assign/index.js ***!
@@ -35562,10 +35752,21 @@ function __classPrivateFieldIn(state, receiver) {
 
 /***/ }),
 
-/***/ "./assets/images/logo-moowoodle-pro.png":
-/*!**********************************************!*\
-  !*** ./assets/images/logo-moowoodle-pro.png ***!
-  \**********************************************/
+/***/ "./src/assets/images/dualcube.png":
+/*!****************************************!*\
+  !*** ./src/assets/images/dualcube.png ***!
+  \****************************************/
+/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+
+"use strict";
+module.exports = __webpack_require__.p + "images/dualcube.51dfda0b.png";
+
+/***/ }),
+
+/***/ "./src/assets/images/logo-moowoodle-pro.png":
+/*!**************************************************!*\
+  !*** ./src/assets/images/logo-moowoodle-pro.png ***!
+  \**************************************************/
 /***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
 "use strict";

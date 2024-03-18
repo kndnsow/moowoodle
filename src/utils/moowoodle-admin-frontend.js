@@ -39,7 +39,7 @@
                 // Once checked, disable the checkbox
                 if (!checkbox.checked) {
                     if(!warningShown){
-                        const warningHTML = '<div class="mw-warning-massage" id="warningMessage-' + index + '" style="position: relative;">' + admin_frontend_args.lang.warning_to_force_checked + '</div>';
+                        const warningHTML = '<div class="mw-warning-massage" id="warningMessage-' + index + '" style="position: relative;">' + MooWoodleAppLocalizer.lang.warning_to_force_checked + '</div>';
                         checkbox.parentElement.insertAdjacentHTML("afterend", warningHTML);
                         warningShown = true;
                     }
@@ -53,13 +53,13 @@
             var $inputField = $button.siblings('.mw-setting-form-input');
             var inputValue = $inputField.val();
             copyToClipboard(inputValue);
-            $button.text(admin_frontend_args.lang.Copied).prop('disabled', true);
-            $('.mw-copytoclip').not($button).prop('disabled', false).text(admin_frontend_args.lang.Copy);
+            $button.text(MooWoodleAppLocalizer.lang.Copied).prop('disabled', true);
+            $('.mw-copytoclip').not($button).prop('disabled', false).text(MooWoodleAppLocalizer.lang.Copy);
         });
         $('.mw-setting-form-input').on("input", function() {
             var $inputField = $(this);
             var $button = $inputField.siblings('.mw-copytoclip');
-            $button.prop('disabled', false).text(admin_frontend_args.lang.Copy);
+            $button.prop('disabled', false).text(MooWoodleAppLocalizer.lang.Copy);
         });
 
         function copyToClipboard(text) {
@@ -71,31 +71,6 @@
             tempInput.select();
             document.execCommand("copy");
             document.body.removeChild(tempInput);
-        }
-        //warning to save changes
-        const textInputs = document.querySelectorAll(".mw-setting-form-input");
-        const warningMessages = [];
-        if (textInputs != null) {
-            textInputs.forEach((textInput, index) => {
-                const originalValue = textInput.value;
-                let warningShown = false;
-                textInput.addEventListener("input", function() {
-                    textInput.value = textInput.value.trim();
-                    if (!warningShown && textInput.value !== originalValue) {
-                        const warningHTML = '<div class="mw-warning-massage" id="warningMessage-' + index + '" style="color: red; display: block;">' + admin_frontend_args.lang.warning_to_save + '</div>';
-                        textInput.insertAdjacentHTML("afterend", warningHTML);
-                        warningShown = true;
-                        warningMessages[index] = warningHTML;
-                    } else if (warningShown && textInput.value === originalValue) {
-                        const warningMessage = document.getElementById("warningMessage-" + index);
-                        if (warningMessage) {
-                            warningMessage.remove();
-                            warningShown = false;
-                            warningMessages[index] = null;
-                        }
-                    }
-                });
-            });
         }
         //multiple-checkboxs select/Deselect all
         const button = document.getElementById("selectDeselectButton");
@@ -113,59 +88,6 @@
                     });
                 }
             });
-        }
-        //test connection
-        var course_id = '';
-        var course_empty = '';
-        var user_id = '';
-        $(".test-connection").click(function() {
-            // status div clear 
-            $(".test-connection-contains").html("");
-            // posttipe clear .test_connect_posttype
-            //posttype titel
-            var actions_desc = admin_frontend_args.testconnection_actions;
-            var actions = Object.keys(actions_desc);
-            callajax(actions, actions_desc);
-        });
-
-        function callajax(actions, actions_desc) {
-            // display the number
-            // decrease the number value
-            const action = actions.shift();
-            $.ajax({
-                method: 'post',
-                url: 'admin-ajax.php',
-                data: {
-                    action: action,
-                    nonce: admin_frontend_args.nonce,
-                    user_id: user_id,
-                    course_id: course_id,
-                },
-                success: function(response) {
-                    if (response['message']) {
-                        if (response['message'] == 'success') {
-                            var massage = '<span class="test-connection-status-icon"><i class="mw-success-icon dashicons dashicons-yes-alt"></i></span>';
-                        } else {
-                            var massage = '<span class="test-connection-status-icon"><i class="mw-error-icon dashicons dashicons-dismiss"></i>' + response['message'] + '</span>';
-                        }
-                        $('.test-connection-contains').append($('<div class="test-connection-status"><span class="test-connection-status-content">' + actions_desc[action] + ' :</span>  ' + massage + ' </div>'));
-                        course_empty = response['course_empty'];
-                        course_id = response['course_id'];
-                        user_id = response['user_id'];
-                        if(course_empty != '')console.log(course_empty);
-                        if(action == 'get_site_info' && response['message'] != 'success'){
-                            console.log('Setup Problem.');
-                        } else if(action == 'update_user' &&  !course_id) {
-                            console.log('Course not found.');
-                        }  else if(action == 'update_user' &&  user_id == null) {
-                            console.log('User not found.');
-                        } else if (actions.length !== 0) {
-                            callajax(actions, actions_desc);
-                        }
-                    }
-                }
-            });
-        course_id = course_empty =  user_id = '';
         }
         //sso generat key
         const inputDiv = document.querySelector(".mw-textbox-input-wraper");

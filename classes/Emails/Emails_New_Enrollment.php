@@ -52,7 +52,7 @@ class Emails_New_Enrollment extends \WC_Email {
 	 */
 	function get_content_html() {
 		ob_start();
-		MWD()->Template->get_template(
+		MooWoodle()->Template->get_template(
 			$this->template_html,
 			array(
 				'enrollments' => $this->object,
@@ -72,7 +72,7 @@ class Emails_New_Enrollment extends \WC_Email {
 	 */
 	function get_content_plain() {
 		ob_start();
-		MWD()->Template->get_template(
+		MooWoodle()->Template->get_template(
 			$this->template_plain,
 			array(
 				'enrollments' => $this->object,

@@ -20,7 +20,7 @@ if (!get_user_meta($user_id, 'moowoodle_moodle_user_id')) {
 }
 echo esc_html('To enroll and access your course please click on the course link given below :', 'moowoodle') . '\n\n';
 foreach ($enrollments['enrolments'] as $enrollment) {
-	$enrollment_list[] = Helper::get_moowoodle_course_url($enrollment['courseid'], $enrollment['course_name']);
+	$enrollment_list[] = MooWoodle()->Helper->get_moowoodle_course_url($enrollment['courseid'], $enrollment['course_name']);
 	echo esc_html('You are enrolled in ' . $enrollment_list[$i]) . ' \n\n';
 	$i++;
 }

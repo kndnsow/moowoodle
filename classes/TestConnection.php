@@ -42,14 +42,14 @@ class TestConnection {
 				}, $response_arr['functions']);
 				$missing_functions = array_diff($web_service_functions, $response_functions);
 				if (!empty($missing_functions)) {
-					Helper::MW_log( "\n\n        It seems that certain Moodle external web service functions are not configured correctly.\n        The missing functions following:" . wp_json_encode($missing_functions) . "\n\n");
+					MooWoodle()->Helper->MW_log( "\n\n        It seems that certain Moodle external web service functions are not configured correctly.\n        The missing functions following:" . wp_json_encode($missing_functions) . "\n\n");
 				} else if (!MOOWOODLE_PRO_ADV) {
 					if (!in_array('auth_moowoodle_user_sync_get_all_users_data', $response_functions) && defined( 'MOOWOODLE_PRO_PLUGIN_VERSION' ) && version_compare( MOOWOODLE_PRO_PLUGIN_VERSION, '1.0.5', '<' ) ) {
-						Helper::MW_log( "\n\n        It seems that you are using MooWoodle Pro but Moodle external web service functions 'auth_moowoodle_user_sync_get_all_users_data' is not configured correctly.\n\n");
+						MooWoodle()->Helper->MW_log( "\n\n        It seems that you are using MooWoodle Pro but Moodle external web service functions 'auth_moowoodle_user_sync_get_all_users_data' is not configured correctly.\n\n");
 					} else if (!in_array('auth_moowoodle_user_sync', $response_functions) && defined( 'MOOWOODLE_PRO_PLUGIN_VERSION' ) && version_compare( MOOWOODLE_PRO_PLUGIN_VERSION, '1.0.5', '>=' ) ) {
-						MWD()->dMW_log( "\n\n        It seems that you are using MooWoodle Pro but Moodle external web service functions 'auth_moowoodle_user_sync' is not configured correctly.\n\n");
+						MooWoodle()->dMW_log( "\n\n        It seems that you are using MooWoodle Pro but Moodle external web service functions 'auth_moowoodle_user_sync' is not configured correctly.\n\n");
 					} else if ($response_arr['downloadfiles'] != 1) {
-						Helper::MW_log( "\n\n        It seems that you are using MooWoodle Pro but Moodle external web service is not configured correctly. Please edit your Moodle External service and enable 'Can download files' (you can find it from 'Show more...' options)\n\n");
+						MooWoodle()->Helper->MW_log( "\n\n        It seems that you are using MooWoodle Pro but Moodle external web service is not configured correctly. Please edit your Moodle External service and enable 'Can download files' (you can find it from 'Show more...' options)\n\n");
 					} else {
 						$response_data['message'] = 'success';
 					}
@@ -215,7 +215,7 @@ class TestConnection {
 			$request_query = http_build_query($request_param);
 			$response = wp_remote_post($request_url, array('body' => $request_query, 'timeout' => get_option('moowoodle_general_settings')['moodle_timeout']));
 			if ($conn_settings['moowoodle_adv_log']) {
-				Helper::MW_log( "\n\n        moowoodle url:" . $request_url . '&' . $request_query . "\n        moowoodle response:" . wp_json_encode($response) . "\n\n");
+				MooWoodle()->Helper->MW_log( "\n\n        moowoodle url:" . $request_url . '&' . $request_query . "\n        moowoodle response:" . wp_json_encode($response) . "\n\n");
 			}
 		}
 		return $response;
@@ -276,7 +276,7 @@ class TestConnection {
 				$error_massage =  $error_codes. $response->get_error_message();
 			}
 		}
-		Helper::MW_log( "\n        moowoodle error:" . $error_massage . "\n");
+		MooWoodle()->Helper->MW_log( "\n        moowoodle error:" . $error_massage . "\n");
 		return $error_massage;
 	}
 }

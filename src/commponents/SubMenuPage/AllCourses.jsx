@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import Tabs from "./../Common/Tabs";
-import logo from "../../../assets/images/logo-moowoodle-pro.png";
+import logo from "./../../assets/images/logo-moowoodle-pro.png";
 import DataTable from 'react-data-table-component';
 const LoadingSpinner = () => (
   <tr>
@@ -17,13 +17,14 @@ const LoadingSpinner = () => (
 );
   
 const AllCourses = () => {
+  const { __ } = wp.i18n;
   const [courses, setCourses] = useState([]);
   const [selectedRows, setSelectedRows] = useState([]);
   const [loading, setLoading] = useState(true);
 
   const columns = [
     {
-      name: 'Course Name',
+      name: __('Course Name'),
       selector: row => row.course_name,
       cell: (row) => (
         <a href={row.moodle_url}>
@@ -33,7 +34,7 @@ const AllCourses = () => {
       sortable: true,
     },
     {
-      name: 'Short Name',
+      name: __('Short Name'),
       selector: row => row.course_short_name,
       sortable: true,
     },
@@ -56,7 +57,7 @@ const AllCourses = () => {
       sortable: true,
     },
     {
-      name: 'Category Name',
+      name: __('Category Name'),
       selector: row => row.catagory_name,
       cell: (row) => (
         <a href={row.catagory_url}>
@@ -66,16 +67,16 @@ const AllCourses = () => {
       sortable: true,
     },
     {
-      name: 'Enrolled Users',
+      name: __('Enrolled Users'),
       selector: row => row.enroled_user,
       sortable: true,
     },
     {
-      name: 'Date',
+      name: __('Date'),
       selector: row => row.date,
     },
     {
-      name: 'Actions',
+      name: __('Actions'),
       selector: row => row.course_name,
       cell: (row) => (
         <div
@@ -153,7 +154,7 @@ const AllCourses = () => {
                 <div class="mw-section-child-wraper">
                   <div class="mw-header-search-wrap">
                     <div class="mw-section-header">
-                      <h3>Courses</h3>
+                      <h3>{__('Courses')}</h3>
                     </div>
                   </div>
                   <div class="mw-section-containt">
@@ -169,23 +170,23 @@ const AllCourses = () => {
                                 htmlFor="bulk-action-selector-top"
                                 className="screen-reader-text"
                               >
-                                {MooWoodleAppLocalizer.bulk_actions_label}
+                                {__('Select bulk action')}
                               </label>
                               <select
                                 name="action"
                                 id="bulk-action-selector-top"
                               >
                                 <option value="-1">
-                                  {MooWoodleAppLocalizer.bulk_actions}
+                                  {l__('Bulk Actions')}
                                 </option>
                                 <option value="sync_courses">
-                                  {MooWoodleAppLocalizer.sync_course}
+                                  {__('Sync Course')}
                                 </option>
                                 <option value="sync_create_product">
-                                  {MooWoodleAppLocalizer.create_product}
+                                  {__('Create Product')}
                                 </option>
                                 <option value="sync_update_product">
-                                  {MooWoodleAppLocalizer.update_product}
+                                  {__('Update Product')}
                                 </option>
                               </select>
                               <button
@@ -194,7 +195,7 @@ const AllCourses = () => {
                                 type="button"
                                 onClick={handleBulkAction}
                               >
-                                {MooWoodleAppLocalizer.apply}
+                                {__('Apply',)}
                               </button>
                               <div
                                 dangerouslySetInnerHTML={{
@@ -220,11 +221,11 @@ const AllCourses = () => {
                         />
                         <br />
                         <p className="mw-sync-paragraph">
-                          {MooWoodleAppLocalizer.cannot_find_course}
+                          {__('Cannot find your course in this list?')}
                           <a
                             href={`${MooWoodleAppLocalizer.admin_url}admin.php?page=moowoodle#&tab=moowoodle-synchronization&sub-tab=moowoodle-sync-now`}
                           >
-                            {MooWoodleAppLocalizer.sync_moodle_courses}
+                            {__('Synchronize Moodle Courses from here.')}
                           </a>
                         </p>
                       </div>

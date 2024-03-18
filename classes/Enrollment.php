@@ -90,7 +90,7 @@ class Enrollment {
 	 */
 	private function search_for_moodle_user($field, $values) {
 		// find user on moodle with moodle externel function.
-		$users = Helper::moowoodle_moodle_core_function_callback('get_moodle_users', array('criteria' => array(array('key' => $field, 'value' => $values))));
+		$users = MooWoodle()->Helper->moowoodle_moodle_core_function_callback('get_moodle_users', array('criteria' => array(array('key' => $field, 'value' => $values))));
 		if (!empty($users) && !empty($users['users'])) {
 			return $users['users'][0]['id'];
 		}
@@ -106,7 +106,7 @@ class Enrollment {
 	private function create_moodle_user($moowoodle_moodle_user_id = 0) {
 		$user_data = $this->get_user_data();
 		// create user on moodle with moodle externel function.
-		$moodle_user = Helper::moowoodle_moodle_core_function_callback('create_users', array('users' => array($user_data)));
+		$moodle_user = MooWoodle()->Helper->moowoodle_moodle_core_function_callback('create_users', array('users' => array($user_data)));
 		if (!empty($moodle_user) && array_key_exists(0, $moodle_user)) {
 			$moowoodle_moodle_user_id = $moodle_user[0]['id'];
 			// send email with credentials
@@ -175,7 +175,7 @@ class Enrollment {
 	private function update_moodle_user($moowoodle_moodle_user_id = 0) {
 		$user_data = $this->get_user_data($moowoodle_moodle_user_id);
 		// update user data on moodle with moodle externel function.
-		Helper::moowoodle_moodle_core_function_callback('update_users', array('users' => array($user_data)));
+		MooWoodle()->Helper->moowoodle_moodle_core_function_callback('update_users', array('users' => array($user_data)));
 		return $moowoodle_moodle_user_id;
 	}
 	/**
@@ -202,7 +202,7 @@ class Enrollment {
 			unset($enrolments[$key]['course_name']);
 		}
 		// enroll user to moodle course by core external function.
-		Helper::moowoodle_moodle_core_function_callback('enrol_users', array('enrolments' => $enrolments));
+		MooWoodle()->Helper->moowoodle_moodle_core_function_callback('enrol_users', array('enrolments' => $enrolments));
 		$wc_order->update_meta_data('moodle_user_enrolled', "true");
 		$wc_order->update_meta_data('moodle_user_enrolment_date', time());
 		$wc_order->save();

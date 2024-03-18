@@ -1,17 +1,30 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 const Button = (props) => {
+  const { __ } = wp.i18n;
   let course_id = '';
   let user_id = '';
   let message = '';
   const [emptyDivContaint, setEmptyDivContaint] = useState('');
   const handleButtonClick = async (event, route) => {
     event.target.classList.add("active");
+    const testConnectionActions = {
+      get_site_info: __('Connecting to Moodle'),
+      get_catagory: __('Course Category Sync'),
+      get_course_by_fuild: __('Course Data Sync'),
+      get_course: __('Course Sync'),
+      create_user: __('User Creation'),
+      get_user: __('User Data Sync'),
+      update_user: __('User Data Update'),
+      enrol_users: __('User Enrolment'),
+      unenrol_users: __('User Unenrolment'),
+      delete_users: __('All Test'),
+    };
     
     console.log(event.currentTarget.parentElement.parentElement.querySelector('.test-connection-contains'))
     switch (route) {
       case "test-connection":
-        await testCunnection(Object.keys(MooWoodleAppLocalizer.testconnection_actions), MooWoodleAppLocalizer.testconnection_actions, route, message );
+        await testCunnection(Object.keys(testConnectionActions), testConnectionActions, route, message );
         event.target.classList.remove("active");
         break;
       case "sync-course-options":

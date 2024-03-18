@@ -6,7 +6,16 @@ import Settings from "./commponents/SubMenuPage/Settings";
 import Synchronization from "./commponents/SubMenuPage/Synchronization";
 import SideBanner from "./commponents/Common/SideBanner";
 import ProOverlay from "./commponents/Common/ProOverlay";
+import dualcubeLogo from "./assets/images/dualcube.png";
+
+// css and scss file for global styling.
+import "./styles/admin.css";
+
+// utils js file for global customisation.
+import "./utils/moowoodle-admin-frontend.js";
+
 const App = () => {
+    const { __ } = wp.i18n;
     const currentUrl = window.location.href;
         document.querySelectorAll('#toplevel_page_moowoodle>ul>li>a').forEach((element) => {
             element.parentNode.classList.remove('current');
@@ -39,10 +48,12 @@ const App = () => {
                     { location.get('tab') === 'moowoodle-settings' && <Settings /> }
                     { location.get('tab') === 'moowoodle-synchronization' && <Synchronization /> }
                 <SideBanner />
-                {MooWoodleAppLocalizer.porAdv && <ProOverlay />}
+                {!MooWoodleAppLocalizer.porAdv && <ProOverlay />}
             </div>
 	    </div>
-        
+		<div class="dualcube-admin-footer" id="dualcube-admin-footer">
+        {__('Powered by')} <a href={MooWoodleAppLocalizer.dualcubeUrl} target="_blank"><img src={dualcubeLogo} /></a>{__('ualCube')} &copy; { new Date().getFullYear() }
+		</div>
 		</>
 	);
 }

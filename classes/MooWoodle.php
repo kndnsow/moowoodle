@@ -1,11 +1,10 @@
 <?php
 namespace MooWoodle;
-use Automattic\WooCommerce\Utilities\OrderUtil as WCOrderUtil;
 
 /**
  * MooWoodle Main Class
  *
- * @version		3.1.7
+ * @version		3.1.11
  * @package		MooWoodle
  * @author 		DualCube
  */
@@ -13,13 +12,11 @@ defined('ABSPATH') || exit;
 
 class MooWoodle {
 	private static $instance = null;
-    private $file            = '';
-    private $plugin_url      = '';
-    private $plugin_path     = '';
     private $container       = [];
 	public function __construct($file) {
         register_activation_hook( $file, [ $this, 'activate' ] );
         register_deactivation_hook( $file, [ $this, 'deactivate' ] );
+        add_action( 'admin_menu', [ $this, 'before_moowoodle_load' ] );
         add_action( 'before_woocommerce_init', [ $this, 'declare_compatibility' ] );
         add_action( 'woocommerce_loaded', [ $this, 'init_plugin' ] );
         add_action( 'plugins_loaded', [ Helper::class , 'is_woocommerce_loaded_notice'] );
@@ -42,6 +39,21 @@ class MooWoodle {
     public function deactivate() {
 		// Nothing to write now.
     }
+    
+    public function before_moowoodle_load() {
+        do_action('before_moodle_load');
+        if(is_admin()){
+            \add_menu_page(
+                "MooWoodle",
+                "MooWoodle",
+                'manage_options',
+                'moowoodle',
+                [Settings::class, 'create_settings_page'],
+                esc_url(MOOWOODLE_PLUGIN_URL) . 'src/assets/images/moowoodle.png',
+                50
+		    );
+        }
+    }
 
     /**
      * Add High Performance Order Storage Support
@@ -53,22 +65,20 @@ class MooWoodle {
     }
 
     public function init_plugin() {
+        // add link on pugin 'active' button
         if (is_admin() && !defined('DOING_AJAX')) {
             add_filter('plugin_action_links_' . plugin_basename(MOOWOODLE_FILE), [ Helper::class , 'moowoodle_plugin_links']);
         }
-        $this->includes_files();
         $this->init_hooks();
-        
+		// Init Text Domain
+		$this->load_plugin_textdomain();
+		// Create Log File.
+		Helper::MW_log('');
         do_action( 'moowoodle_loaded' );
-    }
-
-	private function includes_files() {
-        
     }
 
     private function init_hooks() {
         add_action('init', [$this, 'init_classes']);
-        add_action('init', [$this, 'plugin_init']);
         add_action('admin_init', [$this, 'plugin_admin_init']);
     }
     /**
@@ -77,40 +87,33 @@ class MooWoodle {
      * @return void
      */
     public function init_classes() {
+		$this->container['Helper'] = new Helper();
 		$this->container['Course'] = new Course();
-		$this->container['Synchronize'] = new Synchronize();
-		$this->container['TestConnection'] = new TestConnection();
 		$this->container['RestAPI'] = new RestAPI();
-		$this->container['Enrollment'] = new Enrollment();
-		$this->container['Emails'] = new Emails();
 		$this->container['Template'] = new Template();
+		$this->container['Enrollment'] = new Enrollment();
 		$this->container['MyAccountEndPoint'] = new MyAccountEndPoint();
+		$this->container['Emails'] = new Emails();
 		if(is_admin()){
-			$this->container['admin'] = new Admin();
+			$this->container['Settings'] = new Settings();
+		    $this->container['TestConnection'] = new TestConnection();
+		    $this->container['Synchronize'] = new Synchronize();
 		}
 
     }
 	public function plugin_admin_init() {
 		/* Migrate MooWoodle data */
-        Helper::moowoodle_migration();
+        MooWoodle()->Helper->moowoodle_migration();
 	}
-
-	public function plugin_init() {
-		
-		// Init Text Domain
-		$this->load_plugin_textdomain();
-		// Create Log File.
-		Helper::MW_log('');
-    }
 	/**
 	 * Load Localisation files.
 	 *
 	 * Note: the first-loaded translation file overrides any following ones if the same translation is present
 	 *
-	 * @access public
+	 * @access private
 	 * @return void
 	 */
-	public function load_plugin_textdomain() {
+	private function load_plugin_textdomain() {
 		$locale = apply_filters('plugin_locale', get_locale(), $this->token);
 		load_textdomain('moowoodle', WP_LANG_DIR . "/moowoodle/moowoodle-$locale.mo");
 		load_textdomain('moowoodle', MOOWOODLE_PLUGIN_PUTH . "/languages/moowoodle-$locale.mo");
@@ -125,7 +128,6 @@ class MooWoodle {
      * @return  object | \WP_Error
      */
     public function __get( $class ) {
-		// file_put_contents( plugin_dir_path(__FILE__) . "/error.log", date("d/m/Y H:i:s", time()) . ":class:  : " . var_export($class, true) . "\n", FILE_APPEND);
         if ( array_key_exists( $class, $this->container ) ) {
             return $this->container[ $class ];
         }

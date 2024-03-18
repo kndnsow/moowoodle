@@ -20,10 +20,11 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
+// autoload classes.
 require_once __DIR__ . '/vendor/autoload.php';
 
-function MWD() {
+function MooWoodle() {
     return \MooWoodle\MooWoodle::init(__FILE__);
 }
 
-MWD();
+MooWoodle();

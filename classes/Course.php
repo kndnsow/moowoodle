@@ -2,7 +2,6 @@
 namespace MooWoodle;
 class Course {
 	private $labels;
-	private $endpoint_slug = '';
 	public function __construct() {
 		// define labels for resigster course post 
 		// and category texonomy.
@@ -19,7 +18,7 @@ class Course {
 		add_filter('woocommerce_product_data_tabs', array(&$this, 'moowoodle_linked_course_tab'), 99, 1);
 		add_action('woocommerce_product_data_panels', array(&$this, 'moowoodle_linked_course_panals'));
 		// add subcription product notice .
-		add_filter('woocommerce_product_class', array($this, 'product_type_subcription_warning'), 10, 2);
+		add_filter('woocommerce_product_class', array(&$this, 'product_type_subcription_warning'), 10, 2);
 		// Course meta save with WooCommerce product save
 		add_action('woocommerce_process_product_meta', array(&$this, 'save_product_meta_data'));
 	}
@@ -30,7 +29,7 @@ class Course {
 	 * @param array $args
 	 * @return array $courses
 	 */
-	public static function mwd_get_courses ($args) {
+	public static function mwd_get_courses ($args = []) {
 		$args = array_merge(['post_type' => 'course', 'post_status' => 'publish'],$args);
 		return get_posts($args);
 	}
@@ -47,7 +46,6 @@ class Course {
 			return 0;
 		}
 		$terms = get_terms(array('taxonomy' => $taxonomy, 'hide_empty' => false, 'meta_key' => $meta_key, 'meta_value' => $category_id));
-		// echo '<pre>';print_r(var_export($terms,true));die;
 		if ($terms && !is_wp_error($terms)) {
 			return $terms[0];
 		}
@@ -218,11 +216,11 @@ class Course {
 			$moodle_url = esc_url(get_option('moowoodle_general_settings')["moodle_url"]) . 'course/edit.php?id=' . $moodle_course_id;
 			$synced_products = [];
 			// get all products lincked with course.
-			$product_ids = get_posts(['post_type' => 'product', 'numberposts' => -1, 'post_status' => 'publish',  'fields' => 'ids', 'meta_key' => 'linked_course_id', 'meta_value' => $course_id]);
+			$products = get_posts(['post_type' => 'product', 'numberposts' => -1, 'post_status' => 'publish', 'meta_key' => 'linked_course_id', 'meta_value' => $course_id]);
 			$count_enrolment = 0;
-			foreach ($product_ids as $product_id) {
-				$synced_products[esc_html(get_the_title($product_id))] = esc_url(admin_url() . 'post.php?post=' . $product_id->ID . '&action=edit');
-				$count_enrolment = $count_enrolment + (int) get_post_meta($product_id, 'total_sales', true);
+			foreach ($products as $product) {
+				$synced_products[esc_html(get_the_title($product))] = esc_url(admin_url() . 'post.php?post=' . $product->ID . '&action=edit');
+				$count_enrolment = $count_enrolment + (int) get_post_meta($product->ID, 'total_sales', true);
 			}
 			$date = wp_date('M j, Y', get_post_meta($course_id, '_course_startdate', true));
 			if ($course_enddate) {

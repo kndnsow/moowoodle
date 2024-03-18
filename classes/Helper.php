@@ -47,7 +47,7 @@ class Helper {
 			$request_query = http_build_query($request_param);
 			$response = wp_remote_post($request_url, array('body' => $request_query, 'timeout' => $conn_settings['moodle_timeout']));
 			if($conn_settings['moowoodle_adv_log']){
-				Helper::MW_log( "\n\n        moowoodle url:" . $request_url . '&' . $request_query . "\n        moowoodle response:" . wp_json_encode($response) . "\n\n");
+				MooWoodle()->Helper->MW_log( "\n\n        moowoodle url:" . $request_url . '&' . $request_query . "\n        moowoodle response:" . wp_json_encode($response) . "\n\n");
 			}
 		}
 		$url_check = $error_massage = '';
@@ -87,7 +87,7 @@ class Helper {
 				$error_massage =  $error_codes. $response->get_error_message();
 			}
 		}
-		Helper::MW_log( "\n        moowoodle error:" . $error_massage . "\n");
+		MooWoodle()->Helper->MW_log( "\n        moowoodle error:" . $error_massage . "\n");
 		return null;
 	}
     /**
@@ -130,11 +130,11 @@ class Helper {
 			// log folder create
 			if (!file_exists(MW_LOGS . "/error.txt")) {
 				wp_mkdir_p(MW_LOGS);
-				$wp_filesystem->put_contents(MW_LOGS . "/error.txt", gmdate("d/m/Y H:i:s", time()) . ': ' . "MooWoodle Log file Created\n");
+				$message = "MooWoodle Log file Created\n";
 			}
 			// Clear log file
 			if (filter_input(INPUT_POST, 'clearlog', FILTER_DEFAULT) !== null) {
-				$wp_filesystem->put_contents(MW_LOGS . "/error.txt", gmdate("d/m/Y H:i:s", time()) . ': ' . "MooWoodle Log file Cleared\n");
+				$message = "MooWoodle Log file Cleared\n";
 			}
 			// Write Log
 			if($message != ''){
@@ -143,8 +143,7 @@ class Helper {
 				if (!empty($existing_content)) {
 					$log_entry = "\n" . $log_entry;
 				}
-				$new_content = $existing_content . $log_entry;
-				return $wp_filesystem->put_contents(MW_LOGS . "/error.txt", $new_content);
+				return $wp_filesystem->put_contents(MW_LOGS . "/error.txt", $existing_content . $log_entry );
 			}
 		}
 		return false;
@@ -158,8 +157,9 @@ class Helper {
             return;
         }
         add_action('admin_notices', [ Helper::class , 'woocommerce_admin_notice']);
-		if (filter_input(INPUT_POST, 'page', FILTER_DEFAULT) == 'moowoodle-settings') {
+		if (filter_input(INPUT_GET, 'page', FILTER_DEFAULT) == 'moowoodle') {
 			?>
+			<a href="javascript:history.back()"><?php echo __("Go Back","moowoodle");?></a>
 			<div style="text-align: center; padding: 20px; height: 100%">
 				<h2><?php echo __('Warning: Activate WooCommerce and Verify Moowoodle Files', 'moowoodle'); ?></h2>
 				<p><?php echo __('To access Moowoodle, please follow these steps:', 'moowoodle'); ?></p>

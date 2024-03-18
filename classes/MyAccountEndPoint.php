@@ -87,7 +87,7 @@ class MyAccountEndPoint {
 			array_splice($table_heading, 2, 0, __("Password (First Time use Only)", 'moowoodle'));
 		}
 		// Render my-course template.
-		MWD()->Template->get_template(
+		MooWoodle()->Template->get_template(
 			apply_filters('moowoodle_my_course_template_path', 'endpoints/my-course.php'),
 			array(
 				'table_heading' => $table_heading,

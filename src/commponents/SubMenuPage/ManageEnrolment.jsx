@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import Tabs from "./../Common/Tabs";
-import logo from "../../../assets/images/logo-moowoodle-pro.png";
+import logo from "./../../assets/images/logo-moowoodle-pro.png";
 import DataTable from 'react-data-table-component';
 import { addDays } from 'date-fns';
 import { DateRangePicker } from 'react-date-range';

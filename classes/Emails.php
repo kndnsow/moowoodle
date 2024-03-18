@@ -40,7 +40,7 @@ class Emails {
 	 */
 	public function send_moodle_enrollment_confirmation($enrolments) {
 		$enrollment_datas = array();
-		$user_id = MWD()->Enrollment->wc_order->get_user_id();
+		$user_id = MooWoodle()->Enrollment->wc_order->get_user_id();
 		$user = get_userdata($user_id);
 		$enrollment_datas['email'] = ($user == false) ? '' : $user->user_email;
 		$enrollment_datas['enrolments'] = $enrolments;

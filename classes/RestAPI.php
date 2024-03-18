@@ -20,7 +20,7 @@ class RestAPI {
         ]);
         register_rest_route('moowoodle/v1', '/fetch-all-courses', [
             'methods' => \WP_REST_Server::READABLE,
-            'callback' => array(MWD()->Course, 'fetch_all_courses'),
+            'callback' => array(MooWoodle()->Course, 'fetch_all_courses'),
             'permission_callback' => array($this, 'moowoodle_permission'),
         ]);
         register_rest_route('moowoodle/v1', '/test-connection', [
@@ -30,7 +30,7 @@ class RestAPI {
         ]);
         register_rest_route('moowoodle/v1', '/sync-course-options', [
             'methods' => \WP_REST_Server::EDITABLE,
-            'callback' => array(MWD()->Synchronize, 'sync_course'),
+            'callback' => array(MooWoodle()->Synchronize, 'sync_course'),
             'permission_callback' => array($this, 'moowoodle_permission'),
         ]);
         register_rest_route('moowoodle/v1', '/fetch-mw-log', [
@@ -67,7 +67,7 @@ class RestAPI {
     public function test_connection($request) {
         $request_data = $request->get_param('data');
         $action = $request_data['action'];
-        $response = MWD()->TestConnection->$action($request_data);
+        $response = TestConnection::$action($request_data);
         return $response;
     }
     /**
