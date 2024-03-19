@@ -6,7 +6,6 @@ import DataTable from 'react-data-table-component';
 const LoadingSpinner = () => (
   <tr>
     <td
-      colSpan={MooWoodleAppLocalizer.from_heading.length}
       style={{ textAlign: "center" }}
     >
       <div className="loading-spinner">
@@ -76,14 +75,62 @@ const AllCourses = () => {
       selector: row => row.date,
     },
     {
-      name: __('Actions'),
+      name:<div dangerouslySetInnerHTML={{__html: __('Actions') + MooWoodleAppLocalizer.pro_sticker}}></div>,
       selector: row => row.course_name,
       cell: (row) => (
-        <div
-          dangerouslySetInnerHTML={{
-            __html: row.actions,
-          }}
-        ></div>
+        <div>
+          <div class="moowoodle-course-actions">
+              <button
+                type="button"
+                name="sync_courses"
+                class= {`${MooWoodleAppLocalizer.pro_popup_overlay} sync-single-course button-primary`}
+                title={__('Sync Couse Data')}
+                onClick={ (e) => {
+                  handleSingleSyncCourse(
+                    'sync_courses',
+                    row.moodle_course_id,
+                    row.id
+                  ) 
+                }}
+                >
+                <i class="dashicons dashicons-update"></i>
+              </button>
+              {
+                Object.keys(row.product).length !== 0 ?
+                <button
+                 type="button"
+                 name="sync_update_product"
+                 class={`${MooWoodleAppLocalizer.pro_popup_overlay} update-existed-single-product button-secondary `}
+                 title={__('Sync Course Data & Update Product')}
+                 onClick={ (e) => {
+                  handleSingleSyncCourse(
+                    'sync_update_product',
+                    row.moodle_course_id,
+                    row.id
+                  ) 
+                 }}
+                 >
+                  <i class="dashicons dashicons-admin-links"></i>
+                </button>
+                :
+                <button
+                 type="button"
+                 name="sync_create_product"
+                 class={`${MooWoodleAppLocalizer.pro_popup_overlay} create-single-product button-secondary`}
+                 title={__('Create Product')}
+                 onClick={ (e) => {
+                  handleSingleSyncCourse(
+                    'sync_create_product',
+                    row.moodle_course_id,
+                    row.id
+                  )
+                 }}
+                >
+                  <i class="dashicons dashicons-cloud-upload"></i>
+                </button>
+              }
+            </div>
+        </div>
       ),
     },
   ];
@@ -107,6 +154,27 @@ const AllCourses = () => {
     
     fetchData();
   }, []);
+  const handleSingleSyncCourse = async (action, moodleCourseIds, CourseIds) => {
+    if(!MooWoodleAppLocalizer.porAdv){
+      axios({
+        method: 'post',
+        url: `${MooWoodleAppLocalizer.rest_url}moowoodle/v1/all-course-bulk-action`,
+        headers: { 'X-WP-Nonce' : MooWoodleAppLocalizer.nonce },
+        data: {
+          selectedAction: action,
+          moodleCourseIds: [moodleCourseIds],
+          CourseIds: [CourseIds]
+        },
+      }).then((response) => {
+          setSuccessMsg("Settings Saved");
+          setTimeout(() => {
+              setSuccessMsg('');
+          }, 2050);
+      }).catch((error) => {
+          console.error('Error:', error);
+      });
+    }
+  };
   const handleSelectedRowsChange = ( selecteRowsData ) => {
     // You can set state or dispatch with something like Redux so we can use the retrieved data
     setSelectedRows(selecteRowsData.selectedRows);
@@ -119,28 +187,28 @@ const AllCourses = () => {
 
     // Extract moodle_course_id from selectedRows
     const moodleCourseIds = selectedRows.map(row => row.moodle_course_id);
-    console.log('Selected moodle course ids:', moodleCourseIds);
-    axios({
-      method: 'post',
-      url: `${MooWoodleAppLocalizer.rest_url}moowoodle/v1/all-course-bulk-action`,
-      headers: { 'X-WP-Nonce' : MooWoodleAppLocalizer.nonce },
-      data: {
-        selectedAction: selectedAction,
-        moodleCourseIds: moodleCourseIds,
-      },
-    }).then((response) => {
-        setSuccessMsg("Settings Saved");
-        setTimeout(() => {
-            setSuccessMsg('');
-        }, 2050);
-    }).catch((error) => {
-        console.error('Error:', error);
-    });
-
-
-
-
-}
+    console.log(moodleCourseIds);
+    
+    if(!MooWoodleAppLocalizer.porAdv){
+      axios({
+        method: 'post',
+        url: `${MooWoodleAppLocalizer.rest_url}moowoodle/v1/all-course-bulk-action`,
+        headers: { 'X-WP-Nonce' : MooWoodleAppLocalizer.nonce },
+        data: {
+          selectedAction: selectedAction,
+          moodleCourseIds: moodleCourseIds,
+          CourseIds: CourseIds
+        },
+      }).then((response) => {
+          setSuccessMsg("Settings Saved");
+          setTimeout(() => {
+              setSuccessMsg('');
+          }, 2050);
+      }).catch((error) => {
+          console.error('Error:', error);
+      });
+    }
+  }
 
 
   return (
@@ -177,7 +245,7 @@ const AllCourses = () => {
                                 id="bulk-action-selector-top"
                               >
                                 <option value="-1">
-                                  {l__('Bulk Actions')}
+                                  {__('Bulk Actions')}
                                 </option>
                                 <option value="sync_courses">
                                   {__('Sync Course')}

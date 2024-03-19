@@ -94,10 +94,10 @@ class MooWoodle {
 		$this->container['Enrollment'] = new Enrollment();
 		$this->container['MyAccountEndPoint'] = new MyAccountEndPoint();
 		$this->container['Emails'] = new Emails();
+		$this->container['Synchronize'] = new Synchronize();
 		if(is_admin()){
 			$this->container['Settings'] = new Settings();
 		    $this->container['TestConnection'] = new TestConnection();
-		    $this->container['Synchronize'] = new Synchronize();
 		}
 
     }

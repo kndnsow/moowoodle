@@ -17,7 +17,7 @@ class Synchronize {
 		// get all caurses from moodle.
 		$courses = MooWoodle()->Helper->moowoodle_moodle_core_function_callback('get_courses');
 		// sync courses post data.
-		$this->update_posts($courses, 'course', 'course_cat', 'moowoodle_term');
+		$this->update_posts($courses, 'course', 'course_cat', '_category_id');
 		// sync product if enable.
 		if ($sync_now_options['sync_all_product']) {
 			$this->update_posts($courses, 'product', 'product_cat', 'woocommerce_term');
@@ -106,7 +106,7 @@ class Synchronize {
 	 * @param string $meta_key (default: null)
 	 * @return void
 	 */
-	private function update_posts($courses, $post_type = '', $taxonomy = '', $meta_key = '') {
+	public function update_posts($courses, $post_type = '', $taxonomy = '', $meta_key = '', $sould_delete_old_posts = true) {
 		if (empty($post_type) || !post_type_exists($post_type) || empty($taxonomy) || !taxonomy_exists($taxonomy) || empty($meta_key)) {
 			return;
 		}
@@ -151,7 +151,7 @@ class Synchronize {
 				$course_ids[$course['id']] = $course['categoryid'];
 			}
 		}
-		$posts = get_posts(array('post_type' => $post_type, 'numberposts' => -1, 'post_status' => 'publish'));
+		$posts = $sould_delete_old_posts ? get_posts(array('post_type' => $post_type, 'numberposts' => -1, 'post_status' => 'publish')) : false;
 		if ($posts) {
 			foreach ($posts as $post) {
 				$course_id = get_post_meta($post->ID, 'moodle_course_id', true);

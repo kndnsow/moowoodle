@@ -10,6 +10,7 @@ import Section from './../CustomInputField/Section';
 import axios from 'axios';
 
 const TabContent = () => {
+    const { __ } = wp.i18n;
     const location = new URLSearchParams(useLocation().hash);
     const tabValue = MooWoodleAppLocalizer.library[location.get('tab')][location.get('sub-tab')];
     const [successMsg, setSuccessMsg] = useState('');
@@ -34,6 +35,7 @@ const TabContent = () => {
     useEffect(() => {
         let timeoutId;
         timeoutId = setTimeout(() => {
+            if(!tabValue) return;
             if(Setting[tabValue.setting] && settingChanged.current){
                 settingChanged.current = false;
                 axios({
@@ -59,6 +61,9 @@ const TabContent = () => {
         };
     }, [Setting]);
     const getFieldContent = (fields) => {
+        if(!fields) return (
+            <>{__('No souch Tab Exist.')}</>
+        );
         return Object.entries(fields).map(([fieldid, field]) => {
             field['id'] = fieldid;
             field['settingid'] = tabValue.setting;
@@ -100,7 +105,7 @@ const TabContent = () => {
             }
             <div class="mw-section-wraper">
                 <div class="mw-section-child-wraper">
-            { getFieldContent(tabValue.field_types) }
+            { getFieldContent(tabValue?.field_types) }
                 </div>
             </div>
 		</>

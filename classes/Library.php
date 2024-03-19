@@ -323,7 +323,7 @@ class Library {
 							"name" => "sync_users_now",
 							"submit_btn_value" => __('Sync All Users Now', 'moowoodle'),
 							"label" => __("Existing Users", 'moowoodle'),
-							"desc" => __("<b>Prior to updating existing user info, you must seclect the user info to be synchronized at </b>", 'moowoodle') . $moowoodle_sync_setting_url . __("<br><br>While synchronizing user information, we use the email address as the unique identifier for each user. We check the username associated with that email address, and if we find the same username in the other instance but with a different email address, the user's information cannot be synchronized.", 'moowoodle') ,
+							"desc" => __("<b>Prior to updating existing user info, you must select the user info to be synchronized at </b>", 'moowoodle') . $moowoodle_sync_setting_url . __("<br><br>While synchronizing user information, we use the email address as the unique identifier for each user. We check the username associated with that email address, and if we find the same username in the other instance but with a different email address, the user's information cannot be synchronized.", 'moowoodle') ,
 							"desc_posi" => "up",
 							"is_pro" => true,
 							"option_values" => array(

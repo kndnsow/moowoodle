@@ -4677,6 +4677,9 @@ __webpack_require__.r(__webpack_exports__);
 
 
 const TabContent = () => {
+  const {
+    __
+  } = wp.i18n;
   const location = new URLSearchParams((0,react_router_dom__WEBPACK_IMPORTED_MODULE_8__.useLocation)().hash);
   const tabValue = MooWoodleAppLocalizer.library[location.get('tab')][location.get('sub-tab')];
   const [successMsg, setSuccessMsg] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)('');
@@ -4703,6 +4706,7 @@ const TabContent = () => {
   (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(() => {
     let timeoutId;
     timeoutId = setTimeout(() => {
+      if (!tabValue) return;
       if (Setting[tabValue.setting] && settingChanged.current) {
         settingChanged.current = false;
         (0,axios__WEBPACK_IMPORTED_MODULE_9__["default"])({
@@ -4730,6 +4734,7 @@ const TabContent = () => {
     };
   }, [Setting]);
   const getFieldContent = fields => {
+    if (!fields) return (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(react__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, __('No souch Tab Exist.'));
     return Object.entries(fields).map(([fieldid, field]) => {
       field['id'] = fieldid;
       field['settingid'] = tabValue.setting;
@@ -4788,7 +4793,7 @@ const TabContent = () => {
     class: "mw-section-wraper"
   }, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
     class: "mw-section-child-wraper"
-  }, getFieldContent(tabValue.field_types))));
+  }, getFieldContent(tabValue?.field_types))));
 };
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (TabContent);
 
@@ -5361,7 +5366,6 @@ __webpack_require__.r(__webpack_exports__);
 
 
 const LoadingSpinner = () => (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("tr", null, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("td", {
-  colSpan: MooWoodleAppLocalizer.from_heading.length,
   style: {
     textAlign: "center"
   }
@@ -5413,13 +5417,45 @@ const AllCourses = () => {
     name: __('Date'),
     selector: row => row.date
   }, {
-    name: __('Actions'),
-    selector: row => row.course_name,
-    cell: row => (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
+    name: (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
       dangerouslySetInnerHTML: {
-        __html: row.actions
+        __html: __('Actions') + MooWoodleAppLocalizer.pro_sticker
       }
-    })
+    }),
+    selector: row => row.course_name,
+    cell: row => (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", null, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
+      class: "moowoodle-course-actions"
+    }, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("button", {
+      type: "button",
+      name: "sync_courses",
+      class: `${MooWoodleAppLocalizer.pro_popup_overlay} sync-single-course button-primary`,
+      title: __('Sync Couse Data'),
+      onClick: e => {
+        handleSingleSyncCourse('sync_courses', row.moodle_course_id, row.id);
+      }
+    }, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("i", {
+      class: "dashicons dashicons-update"
+    })), Object.keys(row.product).length !== 0 ? (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("button", {
+      type: "button",
+      name: "sync_update_product",
+      class: `${MooWoodleAppLocalizer.pro_popup_overlay} update-existed-single-product button-secondary `,
+      title: __('Sync Course Data & Update Product'),
+      onClick: e => {
+        handleSingleSyncCourse('sync_update_product', row.moodle_course_id, row.id);
+      }
+    }, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("i", {
+      class: "dashicons dashicons-admin-links"
+    })) : (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("button", {
+      type: "button",
+      name: "sync_create_product",
+      class: `${MooWoodleAppLocalizer.pro_popup_overlay} create-single-product button-secondary`,
+      title: __('Create Product'),
+      onClick: e => {
+        handleSingleSyncCourse('sync_create_product', row.moodle_course_id, row.id);
+      }
+    }, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("i", {
+      class: "dashicons dashicons-cloud-upload"
+    }))))
   }];
   (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(() => {
     // Fetch data from the WordPress REST API
@@ -5439,6 +5475,29 @@ const AllCourses = () => {
     };
     fetchData();
   }, []);
+  const handleSingleSyncCourse = async (action, moodleCourseIds, CourseIds) => {
+    if (!MooWoodleAppLocalizer.porAdv) {
+      (0,axios__WEBPACK_IMPORTED_MODULE_4__["default"])({
+        method: 'post',
+        url: `${MooWoodleAppLocalizer.rest_url}moowoodle/v1/all-course-bulk-action`,
+        headers: {
+          'X-WP-Nonce': MooWoodleAppLocalizer.nonce
+        },
+        data: {
+          selectedAction: action,
+          moodleCourseIds: [moodleCourseIds],
+          CourseIds: [CourseIds]
+        }
+      }).then(response => {
+        setSuccessMsg("Settings Saved");
+        setTimeout(() => {
+          setSuccessMsg('');
+        }, 2050);
+      }).catch(error => {
+        console.error('Error:', error);
+      });
+    }
+  };
   const handleSelectedRowsChange = selecteRowsData => {
     // You can set state or dispatch with something like Redux so we can use the retrieved data
     setSelectedRows(selecteRowsData.selectedRows);
@@ -5450,25 +5509,28 @@ const AllCourses = () => {
 
     // Extract moodle_course_id from selectedRows
     const moodleCourseIds = selectedRows.map(row => row.moodle_course_id);
-    console.log('Selected moodle course ids:', moodleCourseIds);
-    (0,axios__WEBPACK_IMPORTED_MODULE_4__["default"])({
-      method: 'post',
-      url: `${MooWoodleAppLocalizer.rest_url}moowoodle/v1/all-course-bulk-action`,
-      headers: {
-        'X-WP-Nonce': MooWoodleAppLocalizer.nonce
-      },
-      data: {
-        selectedAction: selectedAction,
-        moodleCourseIds: moodleCourseIds
-      }
-    }).then(response => {
-      setSuccessMsg("Settings Saved");
-      setTimeout(() => {
-        setSuccessMsg('');
-      }, 2050);
-    }).catch(error => {
-      console.error('Error:', error);
-    });
+    console.log(moodleCourseIds);
+    if (!MooWoodleAppLocalizer.porAdv) {
+      (0,axios__WEBPACK_IMPORTED_MODULE_4__["default"])({
+        method: 'post',
+        url: `${MooWoodleAppLocalizer.rest_url}moowoodle/v1/all-course-bulk-action`,
+        headers: {
+          'X-WP-Nonce': MooWoodleAppLocalizer.nonce
+        },
+        data: {
+          selectedAction: selectedAction,
+          moodleCourseIds: moodleCourseIds,
+          CourseIds: CourseIds
+        }
+      }).then(response => {
+        setSuccessMsg("Settings Saved");
+        setTimeout(() => {
+          setSuccessMsg('');
+        }, 2050);
+      }).catch(error => {
+        console.error('Error:', error);
+      });
+    }
   };
   return (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(react__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
     class: "mw-middle-child-container"
@@ -5511,7 +5573,7 @@ const AllCourses = () => {
     id: "bulk-action-selector-top"
   }, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("option", {
     value: "-1"
-  }, l__('Bulk Actions')), (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("option", {
+  }, __('Bulk Actions')), (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("option", {
     value: "sync_courses"
   }, __('Sync Course')), (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("option", {
     value: "sync_create_product"
