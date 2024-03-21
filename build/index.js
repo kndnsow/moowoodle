@@ -5128,9 +5128,7 @@ const MultipleCheckboxs = props => {
         }
       }), (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("p", {
         className: "mw-settings-checkbox-description pt-0"
-      }, checkboxTitle, " ", checkboxOptions.is_pro && (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("span", {
-        className: "mw-pro-tag"
-      }, "Pro"))), (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
+      }, checkboxTitle, " ", checkboxOptions.is_pro && MooWoodleAppLocalizer.pro_sticker)), (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
         className: "mw-normal-checkbox-label"
       }, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("p", {
         className: "mw-form-description"
@@ -5380,6 +5378,7 @@ const AllCourses = () => {
   const {
     __
   } = wp.i18n;
+  const [successMsg, setSuccessMsg] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)('');
   const [courses, setCourses] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)([]);
   const [selectedRows, setSelectedRows] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)([]);
   const [loading, setLoading] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(true);
@@ -5423,7 +5422,7 @@ const AllCourses = () => {
       }
     }),
     selector: row => row.course_name,
-    cell: row => (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", null, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
+    cell: (row, rowIndex) => (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", null, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
       class: "moowoodle-course-actions"
     }, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("button", {
       type: "button",
@@ -5431,7 +5430,7 @@ const AllCourses = () => {
       class: `${MooWoodleAppLocalizer.pro_popup_overlay} sync-single-course button-primary`,
       title: __('Sync Couse Data'),
       onClick: e => {
-        handleSingleSyncCourse('sync_courses', row.moodle_course_id, row.id);
+        handleSingleSyncCourse('sync_courses', row.moodle_course_id, row.id, rowIndex);
       }
     }, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("i", {
       class: "dashicons dashicons-update"
@@ -5441,7 +5440,7 @@ const AllCourses = () => {
       class: `${MooWoodleAppLocalizer.pro_popup_overlay} update-existed-single-product button-secondary `,
       title: __('Sync Course Data & Update Product'),
       onClick: e => {
-        handleSingleSyncCourse('sync_update_product', row.moodle_course_id, row.id);
+        handleSingleSyncCourse('sync_update_product', row.moodle_course_id, row.id, rowIndex);
       }
     }, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("i", {
       class: "dashicons dashicons-admin-links"
@@ -5451,7 +5450,7 @@ const AllCourses = () => {
       class: `${MooWoodleAppLocalizer.pro_popup_overlay} create-single-product button-secondary`,
       title: __('Create Product'),
       onClick: e => {
-        handleSingleSyncCourse('sync_create_product', row.moodle_course_id, row.id);
+        handleSingleSyncCourse('sync_create_product', row.moodle_course_id, row.id, rowIndex);
       }
     }, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("i", {
       class: "dashicons dashicons-cloud-upload"
@@ -5475,7 +5474,7 @@ const AllCourses = () => {
     };
     fetchData();
   }, []);
-  const handleSingleSyncCourse = async (action, moodleCourseIds, CourseIds) => {
+  const handleSingleSyncCourse = async (action, moodleCourseIds, CourseIds, rowIndex) => {
     if (!MooWoodleAppLocalizer.porAdv) {
       (0,axios__WEBPACK_IMPORTED_MODULE_4__["default"])({
         method: 'post',
@@ -5489,7 +5488,12 @@ const AllCourses = () => {
           CourseIds: [CourseIds]
         }
       }).then(response => {
-        setSuccessMsg("Settings Saved");
+        const updatedCourses = [...courses];
+        console.log(updatedCourses);
+        updatedCourses[rowIndex] = response.data[0];
+        console.log(updatedCourses);
+        setCourses(updatedCourses);
+        setSuccessMsg("Synced");
         setTimeout(() => {
           setSuccessMsg('');
         }, 2050);
@@ -5506,7 +5510,7 @@ const AllCourses = () => {
     // Get the selected option from the dropdown
     const selectedAction = document.getElementById("bulk-action-selector-top").value;
     console.log('Selected action:', selectedAction);
-
+    const CourseIds = selectedRows.map(row => row.id);
     // Extract moodle_course_id from selectedRows
     const moodleCourseIds = selectedRows.map(row => row.moodle_course_id);
     console.log(moodleCourseIds);
@@ -5523,7 +5527,18 @@ const AllCourses = () => {
           CourseIds: CourseIds
         }
       }).then(response => {
-        setSuccessMsg("Settings Saved");
+        const updatedCourses = courses.map(course => {
+          const updatedCourse = response.data.find(data => data.moodle_course_id === course.moodle_course_id);
+          if (updatedCourse) {
+            return updatedCourse; // Replace the course data with updatedCourse data
+          } else {
+            return course; // If not found, keep the original course data
+          }
+        });
+        setCourses(updatedCourses);
+        console.log(updatedCourses);
+        // setCourses(updatedCourses);
+        setSuccessMsg("Synced");
         setTimeout(() => {
           setSuccessMsg('');
         }, 2050);
@@ -5542,7 +5557,11 @@ const AllCourses = () => {
     class: "mw-dynamic-form",
     action: "options.php",
     method: "post"
-  }, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
+  }, successMsg && (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
+    className: "mw-notic-display-title setting-display"
+  }, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("i", {
+    className: "mw-font dashicons dashicons-saved"
+  }), successMsg), (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
     id: "moowoodle-link-course-table",
     class: "mw-section-wraper"
   }, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
@@ -5651,7 +5670,6 @@ const ManageEnrolment = () => {
   const [enrolment, setEnrolment] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)([]);
   const [loading, setLoading] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(true);
   const LoadingSpinner = () => (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("tr", null, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("td", {
-    colSpan: MooWoodleAppLocalizer.from_heading.length,
     style: {
       textAlign: "center"
     }

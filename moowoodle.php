@@ -14,17 +14,14 @@
  * Text Domain: moowoodle
  * Domain Path: /languages/
  */
-require_once trailingslashit(dirname(__FILE__)) . 'moowoodle-config.php';
 // Exit if accessed directly
-if (!defined('ABSPATH')) {
-    exit;
-}
+defined('ABSPATH') || exit;
 
+require_once trailingslashit(dirname(__FILE__)) . 'moowoodle-config.php';
 // autoload classes.
 require_once __DIR__ . '/vendor/autoload.php';
 
 function MooWoodle() {
     return \MooWoodle\MooWoodle::init(__FILE__);
 }
-
 MooWoodle();

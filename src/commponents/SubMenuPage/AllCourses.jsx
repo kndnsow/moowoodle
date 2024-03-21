@@ -17,6 +17,7 @@ const LoadingSpinner = () => (
   
 const AllCourses = () => {
   const { __ } = wp.i18n;
+  const [successMsg, setSuccessMsg] = useState('');
   const [courses, setCourses] = useState([]);
   const [selectedRows, setSelectedRows] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -77,7 +78,7 @@ const AllCourses = () => {
     {
       name:<div dangerouslySetInnerHTML={{__html: __('Actions') + MooWoodleAppLocalizer.pro_sticker}}></div>,
       selector: row => row.course_name,
-      cell: (row) => (
+      cell: (row, rowIndex) => (
         <div>
           <div class="moowoodle-course-actions">
               <button
@@ -89,7 +90,8 @@ const AllCourses = () => {
                   handleSingleSyncCourse(
                     'sync_courses',
                     row.moodle_course_id,
-                    row.id
+                    row.id,
+                    rowIndex
                   ) 
                 }}
                 >
@@ -106,7 +108,8 @@ const AllCourses = () => {
                   handleSingleSyncCourse(
                     'sync_update_product',
                     row.moodle_course_id,
-                    row.id
+                    row.id,
+                    rowIndex
                   ) 
                  }}
                  >
@@ -122,7 +125,8 @@ const AllCourses = () => {
                   handleSingleSyncCourse(
                     'sync_create_product',
                     row.moodle_course_id,
-                    row.id
+                    row.id,
+                    rowIndex
                   )
                  }}
                 >
@@ -154,7 +158,7 @@ const AllCourses = () => {
     
     fetchData();
   }, []);
-  const handleSingleSyncCourse = async (action, moodleCourseIds, CourseIds) => {
+  const handleSingleSyncCourse = async (action, moodleCourseIds, CourseIds,rowIndex) => {
     if(!MooWoodleAppLocalizer.porAdv){
       axios({
         method: 'post',
@@ -166,7 +170,12 @@ const AllCourses = () => {
           CourseIds: [CourseIds]
         },
       }).then((response) => {
-          setSuccessMsg("Settings Saved");
+        const updatedCourses = [...courses];
+        console.log(updatedCourses)
+        updatedCourses[rowIndex] = response.data[0];
+        console.log(updatedCourses)
+        setCourses(updatedCourses);
+          setSuccessMsg("Synced");
           setTimeout(() => {
               setSuccessMsg('');
           }, 2050);
@@ -184,7 +193,7 @@ const AllCourses = () => {
     // Get the selected option from the dropdown
     const selectedAction = document.getElementById("bulk-action-selector-top").value;
     console.log('Selected action:', selectedAction);
-
+    const CourseIds = selectedRows.map(row => row.id);
     // Extract moodle_course_id from selectedRows
     const moodleCourseIds = selectedRows.map(row => row.moodle_course_id);
     console.log(moodleCourseIds);
@@ -200,7 +209,18 @@ const AllCourses = () => {
           CourseIds: CourseIds
         },
       }).then((response) => {
-          setSuccessMsg("Settings Saved");
+      const updatedCourses = courses.map(course => {
+        const updatedCourse = response.data.find(data => data.moodle_course_id === course.moodle_course_id);
+        if (updatedCourse) {
+          return updatedCourse; // Replace the course data with updatedCourse data
+        } else {
+          return course; // If not found, keep the original course data
+        }
+      });
+      setCourses(updatedCourses)
+      console.log(updatedCourses)
+        // setCourses(updatedCourses);
+          setSuccessMsg("Synced");
           setTimeout(() => {
               setSuccessMsg('');
           }, 2050);
@@ -218,6 +238,13 @@ const AllCourses = () => {
         <div class="mw-tab-content">
           <div class="mw-dynamic-fields-wrapper">
             <form class="mw-dynamic-form" action="options.php" method="post">
+            {
+                successMsg &&
+                <div className="mw-notic-display-title setting-display">
+                    <i className="mw-font dashicons dashicons-saved"></i>
+                    { successMsg }
+                </div>
+            }
               <div id="moowoodle-link-course-table" class="mw-section-wraper">
                 <div class="mw-section-child-wraper">
                   <div class="mw-header-search-wrap">

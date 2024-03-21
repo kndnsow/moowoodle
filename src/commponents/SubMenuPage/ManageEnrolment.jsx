@@ -14,7 +14,6 @@ const ManageEnrolment = () => {
     const LoadingSpinner = () => (
         <tr>
           <td
-            colSpan={MooWoodleAppLocalizer.from_heading.length}
             style={{ textAlign: "center" }}
           >
             <div className="loading-spinner">

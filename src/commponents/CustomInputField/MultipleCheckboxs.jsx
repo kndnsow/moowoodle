@@ -21,7 +21,7 @@ const MultipleCheckboxs = (props) => {
                                 }}
                             />
                             <p className="mw-settings-checkbox-description pt-0">
-                                {checkboxTitle} {checkboxOptions.is_pro && <span className="mw-pro-tag">Pro</span>}
+                                {checkboxTitle} {checkboxOptions.is_pro && MooWoodleAppLocalizer.pro_sticker}
                             </p>
                         </div>
                         <div className="mw-normal-checkbox-label">

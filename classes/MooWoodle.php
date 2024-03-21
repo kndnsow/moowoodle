@@ -100,8 +100,18 @@ class MooWoodle {
 		    $this->container['TestConnection'] = new TestConnection();
 		}
 
+        // echo '<pre>';
+        // print_r(var_export(
+		// 	$output_array
+        //     ,true
+        // ));die;
+
     }
 	public function plugin_admin_init() {
+
+
+
+
 		/* Migrate MooWoodle data */
         MooWoodle()->Helper->moowoodle_migration();
 	}
