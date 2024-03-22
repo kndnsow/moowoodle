@@ -27,7 +27,7 @@ echo esc_html__('To access your course please click on the course link given bel
 </p>
 <?php
 foreach ($enrollments['enrolments'] as $enrollment) {
-	$enrollment_list[] = MooWoodle()->Helper->get_moowoodle_course_url($enrollment['courseid'], $enrollment['course_name']);
+	$enrollment_list[] = MooWoodle()->Course->get_moowoodle_course_url($enrollment['courseid'], $enrollment['course_name']);
 	?>
 	<p>
 		<?php echo esc_html__('To access your course ', 'moowoodle') . $enrollment_list[$i] . ' <br><br>'; ?>

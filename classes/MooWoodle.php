@@ -13,23 +13,26 @@ defined('ABSPATH') || exit;
 class MooWoodle {
 	private static $instance = null;
     private $container       = [];
+    private $moowoodle_general_settings;
+    private $moowoodle_display_settings;
+    private $moowoodle_sso_settings;
+    private $moowoodle_notification_settings;
+    private $moowoodle_synchronize_settings;
+    private $moowoodle_synchronize_now;
 	public function __construct($file) {
         register_activation_hook( $file, [ $this, 'activate' ] );
         register_deactivation_hook( $file, [ $this, 'deactivate' ] );
-        add_action( 'admin_menu', [ $this, 'before_moowoodle_load' ] );
+        add_action( 'admin_menu', [ Settings::class, 'add_menu' ] );
         add_action( 'before_woocommerce_init', [ $this, 'declare_compatibility' ] );
         add_action( 'woocommerce_loaded', [ $this, 'init_plugin' ] );
-        add_action( 'plugins_loaded', [ Helper::class , 'is_woocommerce_loaded_notice'] );
+        add_action( 'plugins_loaded', [ $this , 'is_woocommerce_loaded'] );
 	}
-
     /**
      * Activation function.
      * @return void
      */
     public function activate() {
         $this->container['install'] = new Installer();
-
-        // flush_rewrite_rules();
     }
 	
     /**
@@ -40,46 +43,39 @@ class MooWoodle {
 		// Nothing to write now.
     }
     
-    public function before_moowoodle_load() {
-        do_action('before_moodle_load');
-        if(is_admin()){
-            \add_menu_page(
-                "MooWoodle",
-                "MooWoodle",
-                'manage_options',
-                'moowoodle',
-                [Settings::class, 'create_settings_page'],
-                esc_url(MOOWOODLE_PLUGIN_URL) . 'src/assets/images/moowoodle.png',
-                50
-		    );
-        }
-    }
 
     /**
      * Add High Performance Order Storage Support
      * @return void
      */
     public function declare_compatibility() {
-        \Automattic\WooCommerce\Utilities\FeaturesUtil::declare_compatibility ( 'custom_order_tables', WP_CONTENT_DIR.'/plugins/moowoodle.moowoodle.php', true );
+        \Automattic\WooCommerce\Utilities\FeaturesUtil::declare_compatibility ( 'custom_order_tables', WP_CONTENT_DIR.'/plugins/moowoodle/moowoodle.php', true );
         
     }
 
     public function init_plugin() {
         // add link on pugin 'active' button
         if (is_admin() && !defined('DOING_AJAX')) {
-            add_filter('plugin_action_links_' . plugin_basename(MOOWOODLE_FILE), [ Helper::class , 'moowoodle_plugin_links']);
+            add_filter('plugin_action_links_' . plugin_basename(MOOWOODLE_FILE), [ $this , 'plugin_links']);
         }
-        $this->init_hooks();
+
+
+
+        $this->moowoodle_general_settings = get_option('moowoodle_general_settings');
+        $this->moowoodle_display_settings = get_option('moowoodle_display_settings');
+        $this->moowoodle_sso_settings = get_option('moowoodle_sso_settings');
+        $this->moowoodle_notification_settings = get_option('moowoodle_notification_settings');
+        $this->moowoodle_synchronize_settings = get_option('moowoodle_synchronize_settings');
+        $this->moowoodle_synchronize_now = get_option('moowoodle_synchronize_now');
+        
+
+        // Init required classes.
+        add_action('init', [$this, 'init_classes']);
 		// Init Text Domain
 		$this->load_plugin_textdomain();
 		// Create Log File.
 		Helper::MW_log('');
         do_action( 'moowoodle_loaded' );
-    }
-
-    private function init_hooks() {
-        add_action('init', [$this, 'init_classes']);
-        add_action('admin_init', [$this, 'plugin_admin_init']);
     }
     /**
      * Init all MooWoodle classess.
@@ -100,21 +96,40 @@ class MooWoodle {
 		    $this->container['TestConnection'] = new TestConnection();
 		}
 
-        // echo '<pre>';
-        // print_r(var_export(
-		// 	$output_array
-        //     ,true
-        // ));die;
-
     }
-	public function plugin_admin_init() {
-
-
-
-
-		/* Migrate MooWoodle data */
-        MooWoodle()->Helper->moowoodle_migration();
+    /**
+     * Take action based on if woocommerce is not loaded
+     * @return void
+     */
+    public function is_woocommerce_loaded() {
+        if ( !did_action( 'woocommerce_loaded' ) || is_admin() ) {
+        	add_action('admin_notices', [ $this , 'woocommerce_admin_notice']);
+        }
+    }
+    /**
+     * Admin notice for woocommerce deactive
+     */
+    public function woocommerce_admin_notice() {
+		?>
+		<div id="message" class="error">
+		<p><?php printf(__('%sMooWoodle is inactive.%s The %sWooCommerce plugin%s must be active for the MooWoodle to work. Please %sinstall & activate WooCommerce%s', 'moowoodle'), '<strong>', '</strong>', '<a target="_blank" href="http://wordpress.org/extend/plugins/woocommerce/">', '</a>', '<a href="' . admin_url('plugins.php') . '">', '&nbsp;&raquo;</a>');?></p>
+		</div>
+    	<?php
 	}
+    /**
+     * Plugin page links
+     */
+    public static function plugin_links($links) {
+        $plugin_links = array(
+            '<a href="' . admin_url('admin.php?page=moowoodle-settings') . '">' . __('Settings', 'moowoodle') . '</a>',
+            '<a href="' . MOOWOODLE_SUPPORT_URL . '">' . __('Support', 'moowoodle') . '</a>',
+        );
+        $links = array_merge($plugin_links, $links);
+        if (apply_filters('moowoodle_upgrage_to_pro', true)) {
+            $links[] = '<a href="' . MOOWOODLE_PRO_SHOP_URL . '" target="_blank" style="font-weight: 700;background: linear-gradient(110deg, rgb(63, 20, 115) 0%, 25%, rgb(175 59 116) 50%, 75%, rgb(219 75 84) 100%);-webkit-background-clip: text;-webkit-text-fill-color: transparent;">' . __('Upgrade to Pro', 'moowoodle') . '</a>';
+        }
+        return $links;
+    }
 	/**
 	 * Load Localisation files.
 	 *

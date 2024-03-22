@@ -20,7 +20,7 @@ class RestAPI {
         ]);
         register_rest_route('moowoodle/v1', '/fetch-all-courses', [
             'methods' => \WP_REST_Server::READABLE,
-            'callback' => array(MooWoodle()->Course, 'fetch_all_courses'),
+            'callback' => array($this, 'fetch_all_courses'),
             'permission_callback' => array($this, 'moowoodle_permission'),
         ]);
         register_rest_route('moowoodle/v1', '/test-connection', [
@@ -30,7 +30,7 @@ class RestAPI {
         ]);
         register_rest_route('moowoodle/v1', '/sync-course-options', [
             'methods' => \WP_REST_Server::EDITABLE,
-            'callback' => array(MooWoodle()->Synchronize, 'sync_course'),
+            'callback' => array($this, 'synchronize'),
             'permission_callback' => array($this, 'moowoodle_permission'),
         ]);
         register_rest_route('moowoodle/v1', '/fetch-mw-log', [
@@ -39,6 +39,7 @@ class RestAPI {
             'permission_callback' => array($this, 'moowoodle_permission'),
         ]);
     }
+
     /**
      * MooWoodle api permission function.
      * @return bool
@@ -60,6 +61,28 @@ class RestAPI {
         return 'success';
     }
     /**
+     * Seve the setting set in react's admin setting page.
+     * @param mixed $request
+     * @return array
+     */
+    public function synchronize( $request ) {
+		// get the current setting.
+        $sync_now_options = $request->get_param('data')['preSetting'];
+        // initiate Synchronisation
+        $response = MooWoodle()->Synchronize->initiate($sync_now_options);
+        
+        rest_ensure_response($response);
+    }
+    /**
+     * Seve the setting set in react's admin setting page.
+     * @param mixed $request
+     * @return array
+     */
+    public function fetch_all_courses() {
+        $response = MooWoodle()->Course->fetch_all_courses(['numberposts' => -1, 'fields' => 'ids']);
+        rest_ensure_response($response);
+    }
+    /**
      * Test Connection with moodle server.
      * @param mixed $request
      * @return array
@@ -68,7 +91,7 @@ class RestAPI {
         $request_data = $request->get_param('data');
         $action = $request_data['action'];
         $response = TestConnection::$action($request_data);
-        return $response;
+        rest_ensure_response($response);
     }
     /**
      * Seve the setting set in react's admin setting page.
@@ -80,6 +103,7 @@ class RestAPI {
         if (file_exists(MW_LOGS . "/error.txt")) {
             $logs = explode("\n", wp_remote_retrieve_body(wp_remote_get(get_site_url(null, str_replace(ABSPATH, '', MW_LOGS) . "/error.txt"))));
         }
-        return $logs;
+        rest_ensure_response($logs);
     }
+    
 }

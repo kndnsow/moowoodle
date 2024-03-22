@@ -229,21 +229,21 @@ class TestConnection {
 	 */
 	private static function check_connection($response) {
 		$conn_settings = get_option('moowoodle_general_settings');
-		$url_check = $error_massage = $error_codes = '';
-		if (!is_wp_error($response) && $response != null && $response['response']['code'] == 200) {
+		$url_check = $error_massage = '';
+		if ($response && !is_wp_error($response) && $response['response']['code'] == 200) {
 			if (is_string($response['body'])) {
 				$response_arr = json_decode($response['body'], true);
 				if (json_last_error() === JSON_ERROR_NONE) {
 					if (is_null($response_arr) || !array_key_exists('exception', $response_arr)) {
-						return 'success';
+						return $response_arr;
 					} else {
 						if (str_contains($response_arr['message'], 'Access control exception')) {
-							$url_check = '<a href="' . $conn_settings['moodle_url'] . '/admin/settings.php?section=externalservices">' . __('Link', 'moowoodle') . '</a>';
+							$url_check = '<a href="' . $conn_settings['moodle_url'] . '/admin/settings.php?section=externalservices">Link</a>';
 						}
 						if (str_contains($response_arr['message'], 'Invalid token')) {
-							$url_check = '<a href="' . $conn_settings['moodle_url'] . '/admin/webservice/tokens.php">' . __('Link', 'moowoodle') . '</a>';
+							$url_check = '<a href="' . $conn_settings['moodle_url'] . '/admin/webservice/tokens.php">Link</a>';
 						}
-						$error_massage = $response_arr['message'] . ' ' . $url_check . $response_arr['debuginfo'];
+						$error_massage = $response_arr['message'] . ' ' . $url_check;
 					}
 				} else {
 					$error_massage = __('Response is not JSON decodeable', 'moowoodle');
@@ -251,29 +251,15 @@ class TestConnection {
 			} else {
 				$error_massage = __('Not String response', 'moowoodle');
 			}
-		} elseif (!is_wp_error($response) && $response != null && isset($response['response']['code'])) {
-			$error_msg = '';
-			if ($response['response']['code'] == 404) {
-				$error_msg = ' | Check Moodle URL | ';
-			}
-			if ($response['response']['code'] == 403) {
-				$error_msg = ' | Ensure that Moodle web services and REST protocol are enabled. | ';
-			}
-
-			$error_massage = $error_msg . 'error code:' . $response['response']['code'] . '  ' . $response['response']['message'];
-		} elseif ($response != null) {
-			$error_codes = '';
+		} else {
+			// if response is object and multiple error codes
 			if(is_object($response) && is_array($response->get_error_code())) {
-				foreach($response->get_error_code() as $error_code) {
-					$error_codes .= $error_code;
-				}
-				$error_massage =  $error_codes. $response->get_error_message();
-			} elseif (is_array($response)) {
-				$error_codes .= $response['response']['code'];
-				$error_massage =  $error_codes. $response['response']['message'];
+				$error_massage = implode(' | ', $response->get_error_code());
+				$error_massage .= $response->get_error_message();
+			} elseif (is_array($response)) { // if response is associative array.
+				$error_massage =  $response['response']['code'] . $response['response']['message'];
 			} else {
-				$error_codes .= $response->get_error_code();
-				$error_massage =  $error_codes. $response->get_error_message();
+				$error_massage = $response->get_error_code() . $response->get_error_message();
 			}
 		}
 		MooWoodle()->Helper->MW_log( "\n        moowoodle error:" . $error_massage . "\n");

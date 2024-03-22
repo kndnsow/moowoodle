@@ -6,13 +6,27 @@ class Settings {
 	*/
 	public function __construct() {
 		//Admin menu
-		add_action('admin_menu', array($this, 'add_settings_page'));
+		add_action('admin_menu', array($this, 'add_submenu'));
 	}
 
+    public static function add_menu() {
+        do_action('before_moodle_load');
+        if(is_admin()){
+            \add_menu_page(
+                "MooWoodle",
+                "MooWoodle",
+                'manage_options',
+                'moowoodle',
+                [Settings::class, 'create_settings_page'],
+                esc_url(MOOWOODLE_PLUGIN_URL) . 'src/assets/images/moowoodle.png',
+                50
+		    );
+        }
+    }
 	/**
 	 * Add Option page
 	 */
-	public function add_settings_page() {
+	public function add_submenu() {
 		$menu = Library::get_settings_menu();
 		foreach ($menu as $menu_slug => $menu_names) {
 			add_submenu_page(
@@ -24,6 +38,7 @@ class Settings {
 				'_-return_null'
 			);
 		}
+		remove_submenu_page('moowoodle', 'moowoodle');
 		wp_enqueue_style(
 			'moowoodle_admin_css',
 			MOOWOODLE_PLUGIN_URL . 'build/index.css', array(),
@@ -79,10 +94,28 @@ class Settings {
 	}
 	// create the root page for load react.
 	public static function create_settings_page() {
+		
 		$page = filter_input(INPUT_GET, 'page', FILTER_DEFAULT) !== null ? filter_input(INPUT_GET, 'page', FILTER_DEFAULT) : '';?>
 		<div class="mw-admin-dashbord <?php echo $page; ?>">
 			<div class="mw-general-wrapper" id ="moowoodle_root">
-				
+				<?php
+				if (filter_input(INPUT_GET, 'page', FILTER_DEFAULT) == 'moowoodle' && !did_action( 'woocommerce_loaded' ) ) {
+					?>
+					<a href="javascript:history.back()"><?php echo __("Go Back","moowoodle");?></a>
+					<div style="text-align: center; padding: 20px; height: 100%">
+						<h2><?php echo __('Warning: Activate WooCommerce and Verify Moowoodle Files', 'moowoodle'); ?></h2>
+						<p><?php echo __('To access Moowoodle, please follow these steps:', 'moowoodle'); ?></p>
+						<ol style="text-align: left; margin-left: 40px;">
+							<li><?php echo __('Activate WooCommerce on your <a href="', 'moowoodle') . home_url() . '/wp-admin/plugins.php'; ?>"><?php echo __('website', 'moowoodle'); ?></a><?php echo __(', if it\'s not already activated.', 'moowoodle'); ?></li>
+							<li><?php echo __('Ensure that all Moowoodle files are present in your WordPress installation.', 'moowoodle'); ?></li>
+							<li><?php echo __('If you suspect any missing files, consider reinstalling Moowoodle to resolve the issue.', 'moowoodle'); ?></li>
+						</ol>
+						<p><?php echo __('After completing these steps, refresh this page to proceed.', 'moowoodle'); ?></p>
+					</div>
+					<?php
+					return;
+				}
+				?>
         	</div>
       	</div>
       	<?php

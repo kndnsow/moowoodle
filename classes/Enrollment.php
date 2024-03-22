@@ -21,7 +21,8 @@ class Enrollment {
 		$order = new \WC_Order($order_id);
 		if ($order->get_meta( 'moodle_user_enrolled', true) != "true") {
 			$this->wc_order = $order;
-			$this->process_enrollment();
+			$moodle_user_id = $this->get_moodle_user_id();
+			$this->enrol_moodle_user(intval($moodle_user_id));
 		}
 	}
 
@@ -32,8 +33,6 @@ class Enrollment {
 	 * @return void
 	 */
 	private function process_enrollment() {
-		$moowoodle_moodle_user_id = $this->get_moodle_user_id();
-		$this->enrol_moodle_user(intval($moowoodle_moodle_user_id));
 	}
 
 	/**
@@ -44,8 +43,7 @@ class Enrollment {
 	 * @return int
 	 */
 	private function get_moodle_user_id() {
-		$wc_order = $this->wc_order;
-		$user_id = $wc_order->get_user_id();
+		$user_id = $this->wc_order->get_user_id();
 
 		// if user is a guest user return.
 		if ( ! $user_id ) return $user_id;
@@ -60,7 +58,7 @@ class Enrollment {
 		if ( $moodle_user_id ) return $moodle_user_id;
 
 		// Get user id from moodle database.
-		$moodle_user_id = $this->search_for_moodle_user( 'email', $wc_order->get_billing_email() );
+		$moodle_user_id = $this->search_for_moodle_user( 'email', $this->wc_order->get_billing_email() );
 		
 		// If user id not avialable in moodle databse then create it
 		if ( ! $moodle_user_id ) {
@@ -71,7 +69,7 @@ class Enrollment {
 			$conn_settings = get_option('moowoodle_general_settings');
 			$should_user_update = $conn_settings['update_moodle_user'] ?? '';
 
-			if ( $should_user_update === "Enable" ) {
+			if ( $should_user_update ) {
 				$this->update_moodle_user( $moodle_user_id );
 			}
 		}
@@ -90,7 +88,7 @@ class Enrollment {
 	 */
 	private function search_for_moodle_user($field, $values) {
 		// find user on moodle with moodle externel function.
-		$users = MooWoodle()->Helper->moowoodle_moodle_core_function_callback('get_moodle_users', array('criteria' => array(array('key' => $field, 'value' => $values))));
+		$users = MooWoodle()->ExternalService->do_request('get_moodle_users', array('criteria' => array(array('key' => $field, 'value' => $values))));
 		if (!empty($users) && !empty($users['users'])) {
 			return $users['users'][0]['id'];
 		}
@@ -100,32 +98,31 @@ class Enrollment {
 	 * Creates an user in moodle.
 	 *
 	 * @access private
-	 * @param int $moowoodle_moodle_user_id (default: int)
+	 * @param int $moodle_user_id (default: int)
 	 * @return int
 	 */
-	private function create_moodle_user($moowoodle_moodle_user_id = 0) {
+	private function create_moodle_user($moodle_user_id = 0) {
 		$user_data = $this->get_user_data();
 		// create user on moodle with moodle externel function.
-		$moodle_user = MooWoodle()->Helper->moowoodle_moodle_core_function_callback('create_users', array('users' => array($user_data)));
+		$moodle_user = MooWoodle()->ExternalService->do_request('create_users', array('users' => array($user_data)));
 		if (!empty($moodle_user) && array_key_exists(0, $moodle_user)) {
-			$moowoodle_moodle_user_id = $moodle_user[0]['id'];
+			$moodle_user_id = $moodle_user[0]['id'];
 			// send email with credentials
 			do_action('moowoodle_after_create_moodle_user', $user_data);
 		}
-		return $moowoodle_moodle_user_id;
+		return $moodle_user_id;
 	}
 	/**
 	 * Info about an user to be created/updated in moodle.
 	 *
 	 * @access private
-	 * @param int $moowoodle_moodle_user_id (default: int)
+	 * @param int $moodle_user_id (default: int)
 	 * @return array
 	 */
-	private function get_user_data($moowoodle_moodle_user_id = 0) {
-		$wc_order = $this->wc_order;
-		$user_id = $wc_order->get_user_id();
+	private function get_user_data($moodle_user_id = 0) {
+		$user_id = $this->wc_order->get_user_id();
 		$user = ($user_id != 0) ? get_userdata($user_id) : false;
-		$billing_email = $wc_order->get_billing_email();
+		$billing_email = $this->wc_order->get_billing_email();
 		$username = $billing_email;
 		if ($user) {
 			$username = $user->user_login;
@@ -146,8 +143,8 @@ class Enrollment {
 			$pwd = $moodle_pwd_meta;
 		}
 		$user_data = array();
-		if ($moowoodle_moodle_user_id) {
-			$user_data['id'] = $moowoodle_moodle_user_id;
+		if ($moodle_user_id) {
+			$user_data['id'] = $moodle_user_id;
 		} else {
 			$user_data['email'] = ($user && $user->user_email != $billing_email) ? $user->user_email : $billing_email;
 			$user_data['username'] = $username;
@@ -157,41 +154,40 @@ class Enrollment {
 			$b = strtolower($a);
 			$user_data['lang'] = substr($b, 0, 2);
 		}
-		$user_data['firstname'] = $wc_order->get_billing_first_name();
-		$user_data['lastname'] = $wc_order->get_billing_last_name();
-		$user_data['city'] = $wc_order->get_billing_city();
-		$user_data['country'] = $wc_order->get_billing_country();
+		$user_data['firstname'] = $this->wc_order->get_billing_first_name();
+		$user_data['lastname'] = $this->wc_order->get_billing_last_name();
+		$user_data['city'] = $this->wc_order->get_billing_city();
+		$user_data['country'] = $this->wc_order->get_billing_country();
 		$user_data['preferences'][0]['type'] = "auth_forcepasswordchange";
 		$user_data['preferences'][0]['value'] = 1;
-		return apply_filters('moowoodle_moodle_users_data', $user_data, $wc_order);
+		return apply_filters('moowoodle_moodle_users_data', $user_data, $this->wc_order);
 	}
 	/**
 	 * Updates an user info in moodle.
 	 *
 	 * @access private
-	 * @param int $moowoodle_moodle_user_id (default: int)
+	 * @param int $moodle_user_id (default: int)
 	 * @return int
 	 */
-	private function update_moodle_user($moowoodle_moodle_user_id = 0) {
-		$user_data = $this->get_user_data($moowoodle_moodle_user_id);
+	private function update_moodle_user($moodle_user_id = 0) {
+		$user_data = $this->get_user_data($moodle_user_id);
 		// update user data on moodle with moodle externel function.
-		MooWoodle()->Helper->moowoodle_moodle_core_function_callback('update_users', array('users' => array($user_data)));
-		return $moowoodle_moodle_user_id;
+		MooWoodle()->ExternalService->do_request('update_users', array('users' => array($user_data)));
+		return $moodle_user_id;
 	}
 	/**
 	 * Enrollment/suspend enrollment of an user in moodle.
 	 *
 	 * @access private
-	 * @param int $moowoodle_moodle_user_id (default: int)
+	 * @param int $moodle_user_id (default: int)
 	 * @param int $suspend (default: int)
 	 * @return void
 	 */
-	private function enrol_moodle_user($moowoodle_moodle_user_id, $suspend = 0) {
-		$wc_order = $this->wc_order;
-		if (empty($moowoodle_moodle_user_id) || !is_int($moowoodle_moodle_user_id)) {
+	private function enrol_moodle_user($moodle_user_id, $suspend = 0) {
+		if (empty($moodle_user_id) || !is_int($moodle_user_id)) {
 			return;
 		}
-		$enrolments = $this->get_enrollment_data($moowoodle_moodle_user_id, $suspend);
+		$enrolments = $this->get_enrollment_data($moodle_user_id, $suspend);
 		if (empty($enrolments)) {
 			return;
 		}
@@ -202,10 +198,10 @@ class Enrollment {
 			unset($enrolments[$key]['course_name']);
 		}
 		// enroll user to moodle course by core external function.
-		MooWoodle()->Helper->moowoodle_moodle_core_function_callback('enrol_users', array('enrolments' => $enrolments));
-		$wc_order->update_meta_data('moodle_user_enrolled', "true");
-		$wc_order->update_meta_data('moodle_user_enrolment_date', time());
-		$wc_order->save();
+		MooWoodle()->ExternalService->do_request('enrol_users', array('enrolments' => $enrolments));
+		$this->wc_order->update_meta_data('moodle_user_enrolled', "true");
+		$this->wc_order->update_meta_data('moodle_user_enrolment_date', time());
+		$this->wc_order->save();
 		// send confirmation email
 		do_action('moowoodle_after_enrol_moodle_user', $enrolment_data);
 	}
@@ -213,14 +209,13 @@ class Enrollment {
 	 * Data required for enrollment.
 	 *
 	 * @access private
-	 * @param int $moowoodle_moodle_user_id (default: int)
+	 * @param int $moodle_user_id (default: int)
 	 * @param int $suspend (default: int)
 	 * @return array
 	 */
-	private function get_enrollment_data($moowoodle_moodle_user_id, $suspend = 0) {
-		$wc_order = $this->wc_order;
+	private function get_enrollment_data($moodle_user_id, $suspend = 0) {
 		$enrolments = array();
-		$items = $wc_order->get_items();
+		$items = $this->wc_order->get_items();
 		$role_id = apply_filters('moowoodle_enrolled_user_role_id', 5);
 		if (!empty($items)) {
 			foreach ($items as $item) {
@@ -228,7 +223,7 @@ class Enrollment {
 				if (!empty($course_id)) {
 					$enrolment = array();
 					$enrolment['courseid'] = intval($course_id);
-					$enrolment['userid'] = $moowoodle_moodle_user_id;
+					$enrolment['userid'] = $moodle_user_id;
 					$enrolment['roleid'] = $role_id;
 					$enrolment['suspend'] = $suspend;
 					$enrolment['linked_course_id'] = get_post_meta($item->get_product_id(), 'linked_course_id', true);

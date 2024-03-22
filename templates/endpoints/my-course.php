@@ -49,7 +49,7 @@ if (count($customer_orders) > 0) {
                                 </td>
                                 <td>
                                     <button type="button" class="button-tri">
-                                        <?php echo apply_filters('moodle_course_view_url', MooWoodle()->Helper->get_moowoodle_course_url($moodle_course_id, 'View'), $moodle_course_id); ?>
+                                        <?php echo apply_filters('moodle_course_view_url', MooWoodle()->Course->get_moowoodle_course_url($moodle_course_id, 'View'), $moodle_course_id); ?>
                                         <span class="dashicons dashicons-visibility"></span>
                                     </button>
                                 </td>
