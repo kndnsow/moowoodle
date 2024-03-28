@@ -69,9 +69,44 @@ class RestAPI {
 		// get the current setting.
         $sync_now_options = $request->get_param('data')['preSetting'];
         // initiate Synchronisation
-        $response = MooWoodle()->Synchronize->initiate($sync_now_options);
-        
-        rest_ensure_response($response);
+        // sync category if enabled.
+		if ($sync_now_options['sync_courses_category']) {
+			// get all category from moodle.
+			$categories = MooWoodle()->ExternalService->do_request('get_categories');
+
+			// update course and product categories
+			$this->update_categories( $categories, 'course_cat' );
+			$this->update_categories( $categories, 'product_cat' );
+		}
+
+		// get all caurses from moodle.
+		$courses = MooWoodle()->ExternalService->do_request('get_courses');
+
+		// update all course and product
+		foreach ($courses as $course){
+			$course_ids = $product_ids = [];
+
+			// sync courses post data.
+			$course_id = MooWoodle()->Course->update_course($course);
+			if($course_id) $course_ids[] = $course_id;
+
+			// sync product if enable.
+			if ($sync_now_options['sync_all_product']) {
+				$product_id= MooWoodle()->Product->update_product($course,);
+				if($product_id) $product_ids[] = $product_id;
+			}
+		}
+
+		// remove courses that not exist in moodle.
+		MooWoodle()->Course->remove_exclude_ids($course_ids);
+
+
+		if ($sync_now_options['sync_all_product']) {
+			// remove product that not exist in moodle.
+			MooWoodle()->Product->remove_exclude_ids($product_ids);
+		}
+
+        rest_ensure_response(apply_filters('moowoodle_after_sync','success',$courses, $sync_now_options));
     }
     /**
      * Seve the setting set in react's admin setting page.

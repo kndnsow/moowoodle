@@ -46,7 +46,7 @@ class Course {
 		if (empty($courses) || $course['format'] == 'site') return 0;
 
 		// get the course id linked with moodle.
-		$post_id = $this->get_courses(
+		$post_id = self::get_courses(
 			[
 				'meta_key' 		=> 'moodle_course_id',
 				'meta_value' 	=> $course['id'],
@@ -83,7 +83,7 @@ class Course {
 		update_post_meta( $new_post_id, '_visibility',			$course['visible']) ? 'visible' : 'hidden';
 
 		// set course category id.
-		$term = MooWoodle()->Course->get_category($course['id'], 'course_cat');
+		$term = MooWoodle()->Category->get_category($course['id'], 'course_cat');
 		if ($term) \wp_set_post_terms($new_post_id, $term->term_id, 'course_cat');
 		
 		return $new_post_id;
@@ -110,38 +110,6 @@ class Course {
 		foreach ($posts as $post) {
 			wp_delete_post($post->ID, false);
 		}
-	}
-	/**
-	 * Returns term by moodle category id
-	 *
-	 * @param int $category_id
-	 * @param string $taxonomy (default: null)
-	 * @param string $meta_key (default: null)
-	 * @return object
-	 */
-	public static function get_category($category_id, $taxonomy = '') {
-		if (empty($category_id) || !is_numeric($category_id) || empty($taxonomy) || !taxonomy_exists($taxonomy) ) {
-			return null;
-		}
-
-		// Get the trermes basesd on moodle category id.
-		$terms = get_terms(
-			[
-				'taxonomy' 		=> $taxonomy,
-				'hide_empty' 	=> false,
-				'meta_query' 	=> [
-					'key' 	=> '_category_id',
-					'value' => $category_id
-				]
-			]
-		);
-		
-		// Check no category found.
-		if ( is_wp_error( $terms ) ) {
-			return null;
-		}
-
-		return $terms[0];
 	}
 	public static function get_moowoodle_course_url($moodle_course_id, $course_name) {
 		$course = $moodle_course_id;
@@ -327,7 +295,7 @@ class Course {
 			$course_meta = array_map('current', get_post_meta($course_id,'',true));
 			$course_enddate = $course_meta['_course_enddate'];
 			//get term object by course category id.
-			$term = $this->get_category($course_meta['_category_id'], 'course_cat');
+			$term = MooWoodle()->Category->get_category($course_meta['_category_id'], 'course_cat');
 			$moodle_course_id = $course_meta['moodle_course_id'];
 			$synced_products = [];
 			// get all products lincked with course.

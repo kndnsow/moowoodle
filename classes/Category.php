@@ -1,54 +1,40 @@
 <?php
-namespace MooWoodle;
-class Synchronize {
+ namespace MooWoodle;
+ class Category {
+    
 	/**
-	 * Initiate sync process.
+	 * Returns term by moodle category id
 	 *
-	 * @access public
-	 * @return void
+	 * @param int $category_id
+	 * @param string $taxonomy (default: null)
+	 * @param string $meta_key (default: null)
+	 * @return object
 	 */
-	public function initiate($sync_now_options) {
-		// sync category if enabled.
-		if ($sync_now_options['sync_courses_category']) {
-			// get all category from moodle.
-			$categories = MooWoodle()->ExternalService->do_request('get_categories');
-
-			// update course and product categories
-			$this->update_categories( $categories, 'course_cat' );
-			$this->update_categories( $categories, 'product_cat' );
+	public static function get_category($category_id, $taxonomy = '') {
+		if (empty($category_id) || !is_numeric($category_id) || empty($taxonomy) || !taxonomy_exists($taxonomy) ) {
+			return null;
 		}
 
-		// get all caurses from moodle.
-		$courses = MooWoodle()->ExternalService->do_request('get_courses');
-
-		// update all course and product
-		foreach ($courses as $course){
-			$course_ids = $product_ids = [];
-
-			// sync courses post data.
-			$course_id = MooWoodle()->Course->update_course($course);
-			if($course_id) $course_ids[] = $course_id;
-
-			// sync product if enable.
-			if ($sync_now_options['sync_all_product']) {
-				$product_id= MooWoodle()->Product->update_product($course,);
-				if($product_id) $product_ids[] = $product_id;
-			}
-		}
-
-		// remove courses that not exist in moodle.
-		MooWoodle()->Course->remove_exclude_ids($course_ids);
-
-
-		if ($sync_now_options['sync_all_product']) {
-			// remove product that not exist in moodle.
-			MooWoodle()->Product->remove_exclude_ids($product_ids);
-		}
+		// Get the trermes basesd on moodle category id.
+		$terms = get_terms(
+			[
+				'taxonomy' 		=> $taxonomy,
+				'hide_empty' 	=> false,
+				'meta_query' 	=> [
+					'key' 	=> '_category_id',
+					'value' => $category_id
+				]
+			]
+		);
 		
-		do_action('moowoodle_after_sync',$courses, $sync_now_options);
-		return 'success';
+		// Check no category found.
+		if ( is_wp_error( $terms ) ) {
+			return null;
+		}
+
+		return $terms[0];
 	}
-	/**
+    /**
 	 * Update moodle course categories in Wordpress site.
 	 *
 	 * @access private
@@ -57,7 +43,7 @@ class Synchronize {
 	 * @param string $meta_key
 	 * @return void
 	 */
-	private function update_categories($categories, $taxonomy) {
+	public static function update_categories($categories, $taxonomy) {
 		if (empty($taxonomy) || !taxonomy_exists($taxonomy)) {
 			return;
 		}
@@ -66,7 +52,7 @@ class Synchronize {
 		if (!empty($categories)) {
 			foreach ($categories as $category) {
 				// find and getthe term id for category.
-				$term = MooWoodle()->Course->get_category($category['id'], $taxonomy);
+				$term = self::get_category($category['id'], $taxonomy);
 
 				// If term is exist update it.
 				if ($term) {
@@ -119,7 +105,7 @@ class Synchronize {
 				$parent_category_id = get_term_meta($term->term_id, '_parent', true);
 				if ( empty($parent) ) continue;
 				// get parent term id and continue if not exist
-				$parent_term = MooWoodle()->Course->get_category($parent_category_id, $taxonomy);
+				$parent_term =self::get_category($parent_category_id, $taxonomy);
 				if( empty($parent_term) ) continue;
 				//   sync parent term with term
 				wp_update_term($term->term_id, $taxonomy, array('parent' => $parent_term->term_id));
@@ -128,4 +114,4 @@ class Synchronize {
 			}
 		}
 	}
-}
+ }
